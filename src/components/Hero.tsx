@@ -20,25 +20,24 @@ export function Hero() {
       <Nav />
 
       <div className="relative z-10 flex flex-col items-center text-center px-6 pt-32 pb-40 py-[90px]">
+        <span className="animate-fade-rise text-xs tracking-[0.2em] uppercase text-muted-foreground">
+          Prompt-to-trade · DeFi terminal
+        </span>
+
         <h1
-          className="animate-fade-rise text-5xl sm:text-7xl md:text-8xl leading-[0.95] tracking-[-2.46px] max-w-7xl font-normal text-foreground"
+          className="animate-fade-rise-delay mt-6 text-5xl sm:text-7xl md:text-8xl leading-[0.95] tracking-[-2.46px] max-w-5xl font-normal text-foreground"
           style={{ fontFamily: "'Instrument Serif', serif" }}
         >
-          Where <em className="not-italic text-muted-foreground">conviction</em>{" "}
-          rises{" "}
-          <em className="not-italic text-muted-foreground">
-            through the noise.
-          </em>
+          Trade DeFi in{" "}
+          <em className="not-italic text-muted-foreground">plain English.</em>
         </h1>
 
-        <p className="animate-fade-rise-delay text-muted-foreground text-base sm:text-lg max-w-2xl mt-8 leading-relaxed">
-          We're building the terminal for deep thinkers navigating on-chain
-          markets, deliberate allocators, and quiet believers in a
-          decentralized future. Amid the noise of a thousand protocols,
-          Meridian brings one clear place to think, decide, and act.
+        <p className="animate-fade-rise-delay text-muted-foreground text-base sm:text-lg max-w-xl mt-6 leading-relaxed">
+          Say what you believe. Meridian turns it into an executable trade —
+          across every major protocol, with the risk shown up front.
         </p>
 
-        <WaitlistForm />
+        <WaitlistForm id="waitlist" />
       </div>
     </div>
   )

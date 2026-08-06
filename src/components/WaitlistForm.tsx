@@ -3,7 +3,7 @@ import { useState, type FormEvent } from "react"
 // No backend wired yet — this only confirms locally in the UI.
 // Wire to a real capture service (e.g. Resend, Formspree, Airtable) before
 // treating any submission as an actual signup.
-export function WaitlistForm() {
+export function WaitlistForm({ id }: { id?: string }) {
   const [email, setEmail] = useState("")
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState("")
@@ -21,7 +21,7 @@ export function WaitlistForm() {
   if (submitted) {
     return (
       <div
-        id="waitlist"
+        id={id}
         className="liquid-glass rounded-full px-14 py-5 text-base text-foreground mt-12 animate-fade-rise-delay-2"
       >
         You're on the list — we'll be in touch.
@@ -32,7 +32,7 @@ export function WaitlistForm() {
   return (
     <div className="flex flex-col items-center mt-12 animate-fade-rise-delay-2">
       <form
-        id="waitlist"
+        id={id}
         onSubmit={handleSubmit}
         className="liquid-glass rounded-full flex items-center gap-2 pl-6 pr-2 py-2"
       >
