@@ -1,11 +1,3 @@
-const NAV_LINKS = [
-  { label: "Home", href: "#", active: true },
-  { label: "Terminal", href: "#" },
-  { label: "Protocols", href: "#" },
-  { label: "Journal", href: "#" },
-  { label: "Contact", href: "#" },
-]
-
 export function Nav() {
   return (
     <nav className="relative z-10 flex flex-row items-center justify-between px-8 py-6 max-w-7xl mx-auto">
@@ -15,22 +7,6 @@ export function Nav() {
       >
         Meridian
       </span>
-
-      <div className="hidden md:flex items-center gap-8">
-        {NAV_LINKS.map((link) => (
-          <a
-            key={link.label}
-            href={link.href}
-            className={
-              link.active
-                ? "text-sm text-foreground"
-                : "text-sm text-muted-foreground hover:text-foreground transition-colors"
-            }
-          >
-            {link.label}
-          </a>
-        ))}
-      </div>
 
       <a
         href="#waitlist"

@@ -24,7 +24,7 @@ export function WaitlistForm({ id }: { id?: string }) {
         id={id}
         className="liquid-glass rounded-full px-14 py-5 text-base text-foreground mt-12 animate-fade-rise-delay-2"
       >
-        You're on the list — we'll be in touch.
+        You're on the list. We'll be in touch.
       </div>
     )
   }

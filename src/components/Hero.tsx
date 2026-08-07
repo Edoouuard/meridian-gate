@@ -33,7 +33,7 @@ export function Hero() {
         </h1>
 
         <p className="animate-fade-rise-delay text-muted-foreground text-base sm:text-lg max-w-xl mt-6 leading-relaxed">
-          Say what you believe. Meridian turns it into an executable trade —
+          Say what you believe. Meridian turns it into an executable trade
           across every major protocol, with the risk shown up front.
         </p>
 
