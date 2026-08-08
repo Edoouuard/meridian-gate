@@ -21,12 +21,12 @@ export function Features() {
       <div className="max-w-7xl mx-auto px-8 py-28">
         <Reveal>
           <h2
-            className="text-3xl sm:text-4xl text-foreground max-w-md"
+            className="text-3xl sm:text-4xl text-foreground max-w-xl"
             style={{ fontFamily: "'Instrument Serif', serif" }}
           >
-            Built for{" "}
+            Built for people who trade a thesis,{" "}
             <em className="not-italic text-muted-foreground">
-              on-chain clarity.
+              not a UI.
             </em>
           </h2>
         </Reveal>

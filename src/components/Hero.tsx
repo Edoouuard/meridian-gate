@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react"
 import { Nav } from "@/components/Nav"
 import { WaitlistForm } from "@/components/WaitlistForm"
 
@@ -5,13 +6,22 @@ const VIDEO_SRC =
   "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4"
 
 export function Hero() {
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  useEffect(() => {
+    videoRef.current?.play().catch(() => {})
+  }, [])
+
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-background">
       <video
+        ref={videoRef}
         autoPlay
         loop
         muted
         playsInline
+        {...{ "webkit-playsinline": "true" }}
+        preload="auto"
         className="absolute inset-0 w-full h-full object-cover z-0"
       >
         <source src={VIDEO_SRC} type="video/mp4" />
@@ -25,11 +35,12 @@ export function Hero() {
         </span>
 
         <h1
-          className="animate-fade-rise-delay mt-6 text-5xl sm:text-7xl md:text-8xl leading-[0.95] tracking-[-2.46px] max-w-5xl font-normal text-foreground"
+          className="animate-fade-rise-delay mt-6 text-5xl sm:text-7xl md:text-8xl leading-[0.95] tracking-[-2.46px] max-w-6xl font-normal text-foreground"
           style={{ fontFamily: "'Instrument Serif', serif" }}
         >
-          Trade DeFi in{" "}
-          <em className="not-italic text-muted-foreground">plain English.</em>
+          Form your thesis. Execute it.
+          <br />
+          <em className="not-italic text-muted-foreground">All at once.</em>
         </h1>
 
         <p className="animate-fade-rise-delay text-muted-foreground text-base sm:text-lg max-w-xl mt-6 leading-relaxed">
