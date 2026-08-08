@@ -21,7 +21,7 @@ const STEPS = [
 
 export function HowItWorks() {
   return (
-    <section className="relative bg-background border-t border-border">
+    <section className="relative bg-background">
       <div className="max-w-7xl mx-auto px-8 py-28">
         <Reveal>
           <h2
