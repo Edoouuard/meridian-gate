@@ -1,5 +1,5 @@
 import { Reveal } from "@/components/Reveal"
-import { ThesisBar } from "@/components/ThesisBar"
+import { ThesisDemo } from "@/components/ThesisDemo"
 
 const STEPS = [
   {
@@ -21,8 +21,8 @@ const STEPS = [
 
 export function HowItWorks() {
   return (
-    <section className="relative bg-background">
-      <div className="max-w-7xl mx-auto px-8 py-28">
+    <section className="section-aurora relative overflow-hidden">
+      <div className="relative z-10 max-w-7xl mx-auto px-8 py-28">
         <Reveal>
           <h2
             className="text-3xl sm:text-4xl text-foreground max-w-md"
@@ -34,7 +34,7 @@ export function HowItWorks() {
         </Reveal>
 
         <Reveal delay={120} className="mt-16">
-          <ThesisBar />
+          <ThesisDemo />
         </Reveal>
 
         <div className="grid md:grid-cols-3 gap-6 mt-16">

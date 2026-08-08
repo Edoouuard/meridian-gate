@@ -124,18 +124,29 @@
   animation: fade-rise 0.8s ease-out 0.4s both;
 }
 
-.gradient-divider {
+.section-aurora {
+  position: relative;
+  isolation: isolate;
+}
+
+.section-aurora::before {
+  content: '';
+  position: absolute;
+  inset: -25% -10%;
+  z-index: -1;
   background: linear-gradient(
-    115deg,
+    120deg,
     hsl(201 100% 13%) 0%,
-    hsl(199 90% 22%) 20%,
-    hsl(190 85% 38%) 45%,
-    hsl(201 100% 13%) 65%,
-    hsl(210 70% 28%) 85%,
+    hsl(199 85% 18%) 22%,
+    hsl(190 75% 28%) 42%,
+    hsl(201 100% 13%) 58%,
+    hsl(210 70% 20%) 78%,
     hsl(201 100% 13%) 100%
   );
   background-size: 250% 250%;
-  animation: gradient-shift 12s ease-in-out infinite;
+  animation: gradient-shift 22s ease-in-out infinite;
+  opacity: 0.65;
+  pointer-events: none;
 }
 
 @keyframes gradient-shift {
@@ -151,7 +162,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .gradient-divider {
+  .section-aurora::before {
     animation: none;
     background-position: 50% 50%;
   }
