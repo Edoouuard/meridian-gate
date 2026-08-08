@@ -4,7 +4,11 @@ const DEMOS = [
   {
     thesis: "Hedge my portfolio against ETH downside",
     protocol: "Hyperliquid",
-    action: "Short 2.5 ETH perpetual to offset spot exposure",
+    steps: [
+      "Open a 2.5 ETH short perpetual",
+      "Post 1,200 USDC margin, a 10x safety buffer",
+      "Set a stop-loss at $4,200 to cap downside",
+    ],
     stats: [
       { label: "Net delta", value: "−0.02" },
       { label: "Funding cost", value: "0.01% / 8h" },
@@ -13,7 +17,11 @@ const DEMOS = [
   {
     thesis: "Lock in 8% fixed yield on USDC",
     protocol: "Pendle",
-    action: "Deposit 10,000 USDC into the fixed-rate PT pool",
+    steps: [
+      "Swap 10,000 USDC into Pendle's USDC market",
+      "Buy PT-USDC, the principal token, at a fixed discount",
+      "Hold to maturity for a locked-in 8.2% APY",
+    ],
     stats: [
       { label: "Fixed APY", value: "8.2%" },
       { label: "Maturity", value: "Dec 2026" },
@@ -22,7 +30,11 @@ const DEMOS = [
   {
     thesis: "Go long ETH with 2x leverage",
     protocol: "Aave",
-    action: "Supply ETH, borrow USDC, loop into stETH",
+    steps: [
+      "Supply 5 ETH as collateral",
+      "Borrow 4,000 USDC against it, 67% LTV",
+      "Swap the USDC back into ETH and redeposit",
+    ],
     stats: [
       { label: "Leverage", value: "2.1x" },
       { label: "Health factor", value: "1.8" },
@@ -31,7 +43,11 @@ const DEMOS = [
   {
     thesis: "Rotate idle stables into Pendle",
     protocol: "Pendle",
-    action: "Swap 5,000 USDC into PT-USDe",
+    steps: [
+      "Swap 5,000 USDC into USDe",
+      "Deposit USDe into Pendle's fixed-yield pool",
+      "Receive PT-USDe, locked until maturity",
+    ],
     stats: [
       { label: "Fixed APY", value: "12.4%" },
       { label: "Maturity", value: "90 days" },
@@ -42,7 +58,13 @@ const DEMOS = [
 const TYPE_SPEED = 45
 const DELETE_SPEED = 25
 const RESULT_DELAY_MS = 450
-const RESULT_HOLD_MS = 2800
+const RESULT_HOLD_MS = 3400
+
+const STEP_ANIM = [
+  "animate-fade-rise",
+  "animate-fade-rise-delay",
+  "animate-fade-rise-delay-2",
+]
 
 type Phase = "typing" | "result" | "holding" | "deleting"
 
@@ -96,17 +118,31 @@ export function ThesisDemo() {
       <div
         className="overflow-hidden transition-all duration-500 ease-out"
         style={{
-          maxHeight: showResult ? "240px" : "0px",
+          maxHeight: showResult ? "380px" : "0px",
           opacity: showResult ? 1 : 0,
           marginTop: showResult ? "1rem" : "0rem",
         }}
       >
-        <div className="liquid-glass rounded-2xl p-6 text-left">
+        <div key={index} className="liquid-glass rounded-2xl p-6 text-left">
           <span className="text-xs tracking-[0.15em] uppercase text-muted-foreground">
             {demo.protocol}
           </span>
-          <p className="text-foreground mt-2">{demo.action}</p>
-          <div className="flex gap-8 mt-4">
+
+          <ol className="mt-3 flex flex-col gap-2">
+            {demo.steps.map((step, i) => (
+              <li
+                key={step}
+                className={`flex items-start gap-3 text-foreground text-sm sm:text-base ${STEP_ANIM[i]}`}
+              >
+                <span className="text-muted-foreground shrink-0">
+                  {i + 1}.
+                </span>
+                <span>{step}</span>
+              </li>
+            ))}
+          </ol>
+
+          <div className="flex gap-8 mt-4 pt-4 border-t border-border">
             {demo.stats.map((stat) => (
               <div key={stat.label}>
                 <div className="text-xs text-muted-foreground">
