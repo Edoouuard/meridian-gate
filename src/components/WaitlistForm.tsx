@@ -1,21 +1,38 @@
 import { useState, type FormEvent } from "react"
 
-// No backend wired yet — this only confirms locally in the UI.
-// Wire to a real capture service (e.g. Resend, Formspree, Airtable) before
-// treating any submission as an actual signup.
 export function WaitlistForm({ id }: { id?: string }) {
   const [email, setEmail] = useState("")
   const [submitted, setSubmitted] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState("")
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setError("Enter a valid email.")
       return
     }
+
     setError("")
-    setSubmitted(true)
+    setSubmitting(true)
+    try {
+      const res = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      })
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        throw new Error(body.error || "Something went wrong. Try again.")
+      }
+      setSubmitted(true)
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Something went wrong. Try again."
+      )
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   if (submitted) {
@@ -42,13 +59,15 @@ export function WaitlistForm({ id }: { id?: string }) {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Enter your email"
-          className="bg-transparent outline-none text-base text-foreground placeholder:text-muted-foreground flex-1 min-w-0"
+          disabled={submitting}
+          className="bg-transparent outline-none text-base text-foreground placeholder:text-muted-foreground flex-1 min-w-0 disabled:opacity-60"
         />
         <button
           type="submit"
-          className="rounded-full bg-primary text-primary-foreground px-4 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm whitespace-nowrap shrink-0 hover:scale-[1.03] transition-transform cursor-pointer"
+          disabled={submitting}
+          className="rounded-full bg-primary text-primary-foreground px-4 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm whitespace-nowrap shrink-0 hover:scale-[1.03] transition-transform cursor-pointer disabled:opacity-60 disabled:cursor-default disabled:hover:scale-100"
         >
-          Join Waitlist
+          {submitting ? "Joining…" : "Join Waitlist"}
         </button>
       </form>
       {error && (

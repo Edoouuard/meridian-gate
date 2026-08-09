@@ -25,3 +25,8 @@ dist-ssr
 
 .vercel
 .env*
+
+# Local AI agent skill tooling (installed by Vercel integrations), not app code
+.agents/
+.claude/
+skills-lock.json
