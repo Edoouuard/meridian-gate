@@ -109,53 +109,60 @@ export function ThesisDemo() {
   const showResult = phase === "result" || phase === "holding"
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="liquid-glass rounded-full flex items-center px-8 py-6 min-h-[4.5rem]">
-        <span className="text-lg sm:text-xl text-foreground">{text}</span>
-        <span className="inline-block w-[2px] h-6 bg-foreground ml-1 animate-pulse" />
+    <div className="w-full max-w-2xl mx-auto">
+      <div className="liquid-glass rounded-3xl sm:rounded-full flex items-center px-5 py-4 sm:px-8 sm:py-6 min-h-[3.75rem] sm:min-h-[4.5rem]">
+        <span className="text-base sm:text-xl text-foreground break-words min-w-0">
+          {text}
+        </span>
+        <span className="inline-block w-[2px] h-5 sm:h-6 bg-foreground ml-1 shrink-0 animate-pulse" />
       </div>
 
       <div
-        className="overflow-hidden transition-all duration-500 ease-out"
+        className="grid transition-all duration-500 ease-out"
         style={{
-          maxHeight: showResult ? "380px" : "0px",
+          gridTemplateRows: showResult ? "1fr" : "0fr",
           opacity: showResult ? 1 : 0,
           marginTop: showResult ? "1rem" : "0rem",
         }}
       >
-        <div key={index} className="liquid-glass rounded-2xl p-6 text-left">
-          <span className="text-xs tracking-[0.15em] uppercase text-muted-foreground">
-            {demo.protocol}
-          </span>
+        <div className="overflow-hidden min-h-0">
+          <div
+            key={index}
+            className="liquid-glass rounded-2xl p-5 sm:p-6 text-left"
+          >
+            <span className="text-xs tracking-[0.15em] uppercase text-muted-foreground">
+              {demo.protocol}
+            </span>
 
-          <ol className="mt-3 flex flex-col gap-2">
-            {demo.steps.map((step, i) => (
-              <li
-                key={step}
-                className={`flex items-start gap-3 text-foreground text-sm sm:text-base ${STEP_ANIM[i]}`}
-              >
-                <span className="text-muted-foreground shrink-0">
-                  {i + 1}.
-                </span>
-                <span>{step}</span>
-              </li>
-            ))}
-          </ol>
-
-          <div className="flex gap-8 mt-4 pt-4 border-t border-border">
-            {demo.stats.map((stat) => (
-              <div key={stat.label}>
-                <div className="text-xs text-muted-foreground">
-                  {stat.label}
-                </div>
-                <div
-                  className="text-foreground text-xl mt-0.5"
-                  style={{ fontFamily: "'Instrument Serif', serif" }}
+            <ol className="mt-3 flex flex-col gap-2">
+              {demo.steps.map((step, i) => (
+                <li
+                  key={step}
+                  className={`flex items-start gap-3 text-foreground text-sm sm:text-base ${STEP_ANIM[i]}`}
                 >
-                  {stat.value}
+                  <span className="text-muted-foreground shrink-0">
+                    {i + 1}.
+                  </span>
+                  <span>{step}</span>
+                </li>
+              ))}
+            </ol>
+
+            <div className="flex flex-wrap gap-x-8 gap-y-3 mt-4 pt-4 border-t border-border">
+              {demo.stats.map((stat) => (
+                <div key={stat.label}>
+                  <div className="text-xs text-muted-foreground">
+                    {stat.label}
+                  </div>
+                  <div
+                    className="text-foreground text-lg sm:text-xl mt-0.5"
+                    style={{ fontFamily: "'Instrument Serif', serif" }}
+                  >
+                    {stat.value}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>

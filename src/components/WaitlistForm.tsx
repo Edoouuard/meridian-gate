@@ -22,7 +22,7 @@ export function WaitlistForm({ id }: { id?: string }) {
     return (
       <div
         id={id}
-        className="liquid-glass rounded-full px-14 py-5 text-base text-foreground mt-12 animate-fade-rise-delay-2"
+        className="liquid-glass rounded-full px-8 sm:px-14 py-4 sm:py-5 text-sm sm:text-base text-foreground mt-12 animate-fade-rise-delay-2 max-w-full text-center"
       >
         You're on the list. We'll be in touch.
       </div>
@@ -30,11 +30,11 @@ export function WaitlistForm({ id }: { id?: string }) {
   }
 
   return (
-    <div className="flex flex-col items-center mt-12 animate-fade-rise-delay-2">
+    <div className="flex flex-col items-center w-full max-w-sm sm:max-w-md mt-12 animate-fade-rise-delay-2">
       <form
         id={id}
         onSubmit={handleSubmit}
-        className="liquid-glass rounded-full flex items-center gap-2 pl-6 pr-2 py-2"
+        className="liquid-glass rounded-full flex items-center gap-2 pl-5 pr-1.5 py-1.5 sm:pl-6 sm:pr-2 sm:py-2 w-full"
       >
         <input
           type="email"
@@ -42,11 +42,11 @@ export function WaitlistForm({ id }: { id?: string }) {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Enter your email"
-          className="bg-transparent outline-none text-base text-foreground placeholder:text-muted-foreground w-48 sm:w-64"
+          className="bg-transparent outline-none text-base text-foreground placeholder:text-muted-foreground flex-1 min-w-0"
         />
         <button
           type="submit"
-          className="rounded-full bg-primary text-primary-foreground px-6 py-3 text-sm hover:scale-[1.03] transition-transform cursor-pointer"
+          className="rounded-full bg-primary text-primary-foreground px-4 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm whitespace-nowrap shrink-0 hover:scale-[1.03] transition-transform cursor-pointer"
         >
           Join Waitlist
         </button>
