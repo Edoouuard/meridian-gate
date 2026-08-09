@@ -2,11 +2,7 @@ import { neon } from "@neondatabase/serverless"
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-export default async function handler(request: Request): Promise<Response> {
-  if (request.method !== "POST") {
-    return Response.json({ error: "Method not allowed" }, { status: 405 })
-  }
-
+export async function POST(request: Request): Promise<Response> {
   let email: unknown
   try {
     ;({ email } = await request.json())
