@@ -1,11 +1,17 @@
 import { neon } from "@neondatabase/serverless"
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const REFERRAL_BOOST_DAYS = 2
+
+function generateReferralCode(): string {
+  return crypto.randomUUID().replace(/-/g, "").slice(0, 8)
+}
 
 export async function POST(request: Request): Promise<Response> {
   let email: unknown
+  let ref: unknown
   try {
-    ;({ email } = await request.json())
+    ;({ email, ref } = await request.json())
   } catch {
     return Response.json({ error: "Invalid request body" }, { status: 400 })
   }
@@ -15,12 +21,48 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   const sql = neon(process.env.DATABASE_URL!)
+  const normalizedEmail = email.trim().toLowerCase()
+  const referredBy = typeof ref === "string" && ref.trim() ? ref.trim() : null
 
-  await sql`
-    INSERT INTO waitlist_signups (email)
-    VALUES (${email.trim().toLowerCase()})
-    ON CONFLICT (email) DO NOTHING
+  const [signup] = await sql`
+    INSERT INTO waitlist_signups (email, referral_code, referred_by)
+    VALUES (
+      ${normalizedEmail},
+      ${generateReferralCode()},
+      (SELECT referral_code FROM waitlist_signups WHERE referral_code = ${referredBy})
+    )
+    ON CONFLICT (email) DO UPDATE SET email = EXCLUDED.email
+    RETURNING referral_code
   `
 
-  return Response.json({ ok: true })
+  const referralCode = signup.referral_code as string
+
+  const [{ referral_count: referralCount }] = await sql`
+    SELECT COUNT(*)::int AS referral_count
+    FROM waitlist_signups
+    WHERE referred_by = ${referralCode}
+  `
+
+  const [{ position }] = await sql`
+    WITH counts AS (
+      SELECT referred_by, COUNT(*)::int AS n
+      FROM waitlist_signups
+      WHERE referred_by IS NOT NULL
+      GROUP BY referred_by
+    ),
+    scored AS (
+      SELECT
+        w.referral_code,
+        w.created_at - (COALESCE(c.n, 0) * INTERVAL '1 day' * ${REFERRAL_BOOST_DAYS}) AS effective_time
+      FROM waitlist_signups w
+      LEFT JOIN counts c ON c.referred_by = w.referral_code
+    )
+    SELECT COUNT(*)::int + 1 AS position
+    FROM scored
+    WHERE effective_time < (
+      SELECT effective_time FROM scored WHERE referral_code = ${referralCode}
+    )
+  `
+
+  return Response.json({ ok: true, referralCode, referralCount, position })
 }

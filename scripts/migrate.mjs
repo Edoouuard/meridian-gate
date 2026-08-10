@@ -10,4 +10,14 @@ await sql`
   )
 `
 
+await sql`
+  ALTER TABLE waitlist_signups
+    ADD COLUMN IF NOT EXISTS referral_code TEXT UNIQUE
+`
+
+await sql`
+  ALTER TABLE waitlist_signups
+    ADD COLUMN IF NOT EXISTS referred_by TEXT REFERENCES waitlist_signups(referral_code)
+`
+
 console.log("waitlist_signups table ready")

@@ -1,10 +1,86 @@
-import { useState, type FormEvent } from "react"
+import { useEffect, useState, type FormEvent } from "react"
+import { Copy, Check } from "lucide-react"
+
+const STORAGE_KEY = "meridian_referral_code"
+
+type Status = {
+  referralCode: string
+  referralCount: number
+  position: number
+}
+
+function ReferralStatus({ status }: { status: Status }) {
+  const [copied, setCopied] = useState(false)
+  const link =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/?ref=${status.referralCode}`
+      : ""
+
+  function handleCopy() {
+    navigator.clipboard.writeText(link).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
+  return (
+    <div className="liquid-glass rounded-3xl px-6 py-6 sm:px-8 sm:py-7 mt-12 w-full max-w-sm sm:max-w-md text-center animate-fade-rise-delay-2">
+      <p className="text-foreground text-base sm:text-lg">
+        You're{" "}
+        <span style={{ fontFamily: "'Instrument Serif', serif" }}>
+          #{status.position}
+        </span>{" "}
+        on the list.
+      </p>
+      <p className="text-muted-foreground text-xs sm:text-sm mt-2">
+        {status.referralCount > 0
+          ? `${status.referralCount} friend${status.referralCount === 1 ? "" : "s"} joined through your link. Share it to move up further.`
+          : "Share your link. Every friend who joins moves you up."}
+      </p>
+
+      <button
+        type="button"
+        onClick={handleCopy}
+        className="liquid-glass rounded-full flex items-center justify-between gap-3 px-4 sm:px-5 py-2.5 sm:py-3 mt-5 w-full cursor-pointer hover:scale-[1.02] transition-transform"
+      >
+        <span className="text-foreground text-xs sm:text-sm truncate">
+          {link}
+        </span>
+        {copied ? (
+          <Check size={16} className="text-foreground shrink-0" />
+        ) : (
+          <Copy size={16} className="text-muted-foreground shrink-0" />
+        )}
+      </button>
+    </div>
+  )
+}
 
 export function WaitlistForm({ id }: { id?: string }) {
   const [email, setEmail] = useState("")
-  const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState("")
+  const [status, setStatus] = useState<Status | null>(null)
+
+  useEffect(() => {
+    const savedCode = localStorage.getItem(STORAGE_KEY)
+    if (savedCode) {
+      fetch(`/api/waitlist-status?code=${encodeURIComponent(savedCode)}`)
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (data) setStatus(data)
+          else localStorage.removeItem(STORAGE_KEY)
+        })
+        .catch(() => {})
+    }
+
+    function onJoined(e: Event) {
+      setStatus((e as CustomEvent<Status>).detail)
+    }
+    window.addEventListener("meridian:waitlist-joined", onJoined)
+    return () =>
+      window.removeEventListener("meridian:waitlist-joined", onJoined)
+  }, [])
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -16,16 +92,26 @@ export function WaitlistForm({ id }: { id?: string }) {
     setError("")
     setSubmitting(true)
     try {
+      const ref = new URLSearchParams(window.location.search).get("ref")
       const res = await fetch("/api/waitlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, ref }),
       })
+      const body = await res.json().catch(() => ({}))
       if (!res.ok) {
-        const body = await res.json().catch(() => ({}))
         throw new Error(body.error || "Something went wrong. Try again.")
       }
-      setSubmitted(true)
+      const newStatus: Status = {
+        referralCode: body.referralCode,
+        referralCount: body.referralCount,
+        position: body.position,
+      }
+      localStorage.setItem(STORAGE_KEY, body.referralCode)
+      setStatus(newStatus)
+      window.dispatchEvent(
+        new CustomEvent("meridian:waitlist-joined", { detail: newStatus })
+      )
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Something went wrong. Try again."
@@ -35,13 +121,10 @@ export function WaitlistForm({ id }: { id?: string }) {
     }
   }
 
-  if (submitted) {
+  if (status) {
     return (
-      <div
-        id={id}
-        className="liquid-glass rounded-full px-8 sm:px-14 py-4 sm:py-5 text-sm sm:text-base text-foreground mt-12 animate-fade-rise-delay-2 max-w-full text-center"
-      >
-        You're on the list. We'll be in touch.
+      <div id={id}>
+        <ReferralStatus status={status} />
       </div>
     )
   }
