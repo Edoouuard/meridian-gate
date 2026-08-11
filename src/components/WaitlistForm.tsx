@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react"
-import { Copy, Check } from "lucide-react"
+import { Copy, Check, Share2 } from "lucide-react"
 
 const STORAGE_KEY = "meridian_referral_code"
 
@@ -15,6 +15,12 @@ function ReferralStatus({ status }: { status: Status }) {
     typeof window !== "undefined"
       ? `${window.location.origin}/?ref=${status.referralCode}`
       : ""
+
+  const tweetText =
+    "I just joined the Meridian waitlist. The prompt-to-trade terminal for DeFi. Join me:"
+  const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+    tweetText
+  )}&url=${encodeURIComponent(link)}`
 
   function handleCopy() {
     navigator.clipboard.writeText(link).then(() => {
@@ -52,6 +58,18 @@ function ReferralStatus({ status }: { status: Status }) {
           <Copy size={16} className="text-muted-foreground shrink-0" />
         )}
       </button>
+
+      <a
+        href={tweetUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="liquid-glass rounded-full flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 mt-3 w-full cursor-pointer hover:scale-[1.02] transition-transform"
+      >
+        <Share2 size={15} className="text-muted-foreground shrink-0" />
+        <span className="text-foreground text-xs sm:text-sm">
+          Share on X
+        </span>
+      </a>
     </div>
   )
 }

@@ -1,6 +1,8 @@
 import { neon } from "@neondatabase/serverless"
 
 const REFERRAL_BOOST_DAYS = 2
+// Keep in sync with api/waitlist-count.ts and api/waitlist.ts
+const EXTERNAL_SIGNUP_BASE = Number(process.env.EXTERNAL_SIGNUP_BASE || 0)
 
 export async function GET(request: Request): Promise<Response> {
   const url = new URL(request.url)
@@ -46,5 +48,9 @@ export async function GET(request: Request): Promise<Response> {
     )
   `
 
-  return Response.json({ referralCode, referralCount, position })
+  return Response.json({
+    referralCode,
+    referralCount,
+    position: position + EXTERNAL_SIGNUP_BASE,
+  })
 }

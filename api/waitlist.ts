@@ -2,6 +2,10 @@ import { neon } from "@neondatabase/serverless"
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const REFERRAL_BOOST_DAYS = 2
+// Keep in sync with api/waitlist-count.ts and api/waitlist-status.ts — the
+// same real people counted in the public "X already joined" number should
+// rank ahead of every DB row, since they signed up before this table existed.
+const EXTERNAL_SIGNUP_BASE = Number(process.env.EXTERNAL_SIGNUP_BASE || 0)
 
 function generateReferralCode(): string {
   return crypto.randomUUID().replace(/-/g, "").slice(0, 8)
@@ -64,5 +68,10 @@ export async function POST(request: Request): Promise<Response> {
     )
   `
 
-  return Response.json({ ok: true, referralCode, referralCount, position })
+  return Response.json({
+    ok: true,
+    referralCode,
+    referralCount,
+    position: position + EXTERNAL_SIGNUP_BASE,
+  })
 }
