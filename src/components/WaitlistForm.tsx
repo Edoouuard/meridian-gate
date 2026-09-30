@@ -26,7 +26,7 @@ function ReferralStatus({ status }: { status: Status }) {
       : ""
 
   const tweetText =
-    "I just joined the Meridian waitlist. The prompt-to-trade terminal for DeFi. Join me:"
+    "I just joined the @meridian_thesis waitlist. The prompt-to-trade terminal for DeFi. Join me:"
   const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
     tweetText
   )}&url=${encodeURIComponent(link)}`
