@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from "react"
 import { Copy, Check, Share2 } from "lucide-react"
 
 const STORAGE_KEY = "meridian_referral_code"
+const X_URL = "https://x.com/meridian_thesis"
 
 type Status = {
   referralCode: string
@@ -87,6 +88,23 @@ function ReferralStatus({ status }: { status: Status }) {
           Share on X
         </span>
       </a>
+
+      <div className="mt-6 pt-5 border-t border-white/10">
+        <p className="text-muted-foreground text-xs sm:text-sm">
+          Follow us on X to get all the updates.
+        </p>
+        <a
+          href={X_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="rounded-full bg-primary text-primary-foreground flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 mt-3 w-full cursor-pointer hover:scale-[1.02] transition-transform"
+        >
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+          </svg>
+          <span className="text-xs sm:text-sm">Follow @meridian_thesis</span>
+        </a>
+      </div>
     </div>
   )
 }
