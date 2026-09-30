@@ -21,6 +21,7 @@ export function generateConfirmToken(): string {
 }
 
 const SITE_URL = (process.env.SITE_URL || "https://www.meridian-terminal.com").replace(/\/$/, "")
+const X_URL = "https://x.com/meridian_thesis"
 const FROM = process.env.RESEND_FROM || "Meridian <hello@meridian-terminal.com>"
 
 type EmailContext = {
@@ -104,6 +105,18 @@ export function renderConfirmationEmail(link: string, ctx: EmailContext = {}) {
     </table>
   </td></tr>` : ""}
 
+  <tr><td style="padding:22px 4px 0">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #0d4d70;border-radius:18px">
+      <tr><td style="padding:20px 22px">
+        <p style="margin:0 0 6px;font-family:${SERIF};font-size:20px;color:#ffffff">Follow us on X</p>
+        <p style="margin:0 0 14px;font-family:${SANS};font-size:14px;line-height:1.6;color:#a9c1cf">Get all the updates, sneak peeks and launch news first.</p>
+        <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="border-radius:999px;border:1px solid #ffffff">
+          <a href="${X_URL}" style="display:inline-block;padding:10px 20px;font-family:${SANS};font-size:14px;font-weight:500;color:#ffffff;text-decoration:none;border-radius:999px">Follow @meridian_thesis &rarr;</a>
+        </td></tr></table>
+      </td></tr>
+    </table>
+  </td></tr>
+
   <tr><td style="padding:40px 4px 0;border-top:0">
     <p style="margin:0 0 10px;font-family:${SANS};font-size:12px;line-height:1.6;color:#7fa7bf">
       Button not working? Paste this link in your browser:<br>
@@ -131,6 +144,8 @@ export function renderConfirmationEmail(link: string, ctx: EmailContext = {}) {
     "2. Meridian finds the trade across Aave, Morpho, Lido, Pendle, Hyperliquid, Uniswap and more.",
     "3. Review, then act. Nothing executes without you.",
     ...(referralLink ? ["", `Move up the list, share your link: ${referralLink}`] : []),
+    "",
+    `Follow us on X to get all the updates: ${X_URL}`,
     "",
     "If you didn't sign up, you can ignore this email.",
   ].join("\n")
