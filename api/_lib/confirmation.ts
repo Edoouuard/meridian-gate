@@ -9,6 +9,9 @@ export function ensureConfirmationSchema(sql: NeonQueryFunction<false, false>) {
     await sql`ALTER TABLE waitlist_signups ADD COLUMN IF NOT EXISTS confirmed_at TIMESTAMPTZ`
     await sql`ALTER TABLE waitlist_signups ADD COLUMN IF NOT EXISTS confirm_token TEXT UNIQUE`
     await sql`ALTER TABLE waitlist_signups ADD COLUMN IF NOT EXISTS confirm_sent_at TIMESTAMPTZ`
+    await sql`ALTER TABLE waitlist_signups ADD COLUMN IF NOT EXISTS reminder_sent_at TIMESTAMPTZ`
+    await sql`ALTER TABLE waitlist_signups ADD COLUMN IF NOT EXISTS audience_synced_at TIMESTAMPTZ`
+    await sql`CREATE TABLE IF NOT EXISTS task_events (referral_code TEXT NOT NULL, task TEXT NOT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT now(), PRIMARY KEY (referral_code, task))`
   })().catch((err) => {
     schemaReady = null
     throw err
@@ -27,6 +30,7 @@ const FROM = process.env.RESEND_FROM || "Meridian <hello@meridian-terminal.com>"
 type EmailContext = {
   position?: number
   referralCode?: string
+  reminder?: boolean
 }
 
 const esc = (s: string) =>
@@ -76,10 +80,10 @@ export function renderConfirmationEmail(link: string, ctx: EmailContext = {}) {
       Form your thesis.<br>Execute it. <em style="color:#a9c1cf">All at once.</em>
     </h1>
     <p style="margin:0 0 8px;font-family:${SANS};font-size:16px;line-height:1.6;color:#d6e3ea">
-      Thanks for joining the waitlist. ${positionLine}
+      ${ctx.reminder ? `Your spot on the waitlist is still waiting for you. ${positionLine}` : `Thanks for joining the waitlist. ${positionLine}`}
     </p>
     <p style="margin:0 0 28px;font-family:${SANS};font-size:16px;line-height:1.6;color:#a9c1cf">
-      Confirm your email so we can reach you the moment Meridian opens.
+      ${ctx.reminder ? "You haven't confirmed your email yet. One click and you're all set for launch." : "Confirm your email so we can reach you the moment Meridian opens."}
     </p>
     <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="border-radius:999px;background:#ffffff">
       <a href="${safeLink}" style="display:inline-block;padding:15px 30px;font-family:${SANS};font-size:15px;font-weight:500;color:#0a0a0a;text-decoration:none;border-radius:999px">Confirm my email &rarr;</a>
@@ -135,7 +139,7 @@ export function renderConfirmationEmail(link: string, ctx: EmailContext = {}) {
   const text = [
     "Meridian: form your thesis. Execute it. All at once.",
     "",
-    `Thanks for joining the waitlist.${ctx.position ? ` You're #${ctx.position} on the list.` : ""}`,
+    `${ctx.reminder ? "Your spot on the waitlist is still waiting for you." : "Thanks for joining the waitlist."}${ctx.position ? ` You're #${ctx.position} on the list.` : ""}`,
     "Confirm your email so we can reach you the moment Meridian opens:",
     link,
     "",
@@ -150,9 +154,11 @@ export function renderConfirmationEmail(link: string, ctx: EmailContext = {}) {
     "If you didn't sign up, you can ignore this email.",
   ].join("\n")
 
-  const subject = ctx.position
-    ? `You're #${ctx.position} on the Meridian waitlist. Confirm your spot`
-    : "Confirm your spot on the Meridian waitlist"
+  const subject = ctx.reminder
+    ? "Reminder: confirm your spot on the Meridian waitlist"
+    : ctx.position
+      ? `You're #${ctx.position} on the Meridian waitlist. Confirm your spot`
+      : "Confirm your spot on the Meridian waitlist"
 
   return { subject, html, text }
 }
@@ -183,6 +189,53 @@ export async function sendConfirmationEmail(
     return true
   } catch (err) {
     console.error("[confirm] Resend request failed", err)
+    return false
+  }
+}
+
+export function confirmLink(token: string): string {
+  return `${SITE_URL}/api/confirm?token=${encodeURIComponent(token)}`
+}
+
+// Sends up to 100 emails in one Resend call. Returns true on success.
+export async function sendBatch(
+  messages: { to: string; subject: string; html: string; text: string }[]
+): Promise<boolean> {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey || messages.length === 0) return false
+  const res = await fetch("https://api.resend.com/emails/batch", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+    body: JSON.stringify(messages.map((m) => ({ from: FROM, to: [m.to], subject: m.subject, html: m.html, text: m.text }))),
+  })
+  if (!res.ok) {
+    console.error("[reminder] Resend batch error", res.status, await res.text())
+    return false
+  }
+  return true
+}
+
+// Adds a confirmed signup to Resend Contacts so launch emails / newsletters can
+// be sent from the Resend dashboard (with unsubscribe handled by Resend).
+// Optional RESEND_SEGMENT_ID puts contacts in a specific segment.
+export async function addResendContact(email: string): Promise<boolean> {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey) return false
+  const segment = process.env.RESEND_SEGMENT_ID
+  try {
+    const res = await fetch("https://api.resend.com/contacts", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ email, unsubscribed: false, ...(segment ? { segments: [segment] } : {}) }),
+    })
+    // 409 / "already exists" still means the contact is there.
+    if (res.ok || res.status === 409) return true
+    const body = await res.text()
+    if (/already exist/i.test(body)) return true
+    console.error("[contacts] Resend error", res.status, body)
+    return false
+  } catch (err) {
+    console.error("[contacts] Resend request failed", err)
     return false
   }
 }
