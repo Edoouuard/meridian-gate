@@ -1,9 +1,31 @@
-import { neon } from "@neondatabase/serverless"
+import { neon, type NeonQueryFunction } from "@neondatabase/serverless"
 import {
   ensureConfirmationSchema,
   generateConfirmToken,
   sendConfirmationEmail,
 } from "./_lib/confirmation.js"
+
+// Anti-spam: max signup attempts per IP in a rolling window.
+const RATE_LIMIT = 5
+const RATE_WINDOW_MINUTES = 10
+
+let rateTableReady: Promise<unknown> | null = null
+function ensureRateTable(sql: NeonQueryFunction<false, false>) {
+  rateTableReady ??= (async () => {
+    await sql`CREATE TABLE IF NOT EXISTS signup_attempts (ip_hash TEXT NOT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT now())`
+    await sql`CREATE INDEX IF NOT EXISTS signup_attempts_ip_time ON signup_attempts (ip_hash, created_at)`
+  })().catch((err) => {
+    rateTableReady = null
+    throw err
+  })
+  return rateTableReady
+}
+
+async function hashIp(ip: string): Promise<string> {
+  const data = new TextEncoder().encode(`meridian:${ip}`)
+  const digest = await crypto.subtle.digest("SHA-256", data)
+  return Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, "0")).join("")
+}
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const REFERRAL_BOOST_DAYS = 2
@@ -19,8 +41,9 @@ function generateReferralCode(): string {
 export async function POST(request: Request): Promise<Response> {
   let email: unknown
   let ref: unknown
+  let company: unknown
   try {
-    ;({ email, ref } = await request.json())
+    ;({ email, ref, company } = await request.json())
   } catch {
     return Response.json({ error: "Invalid request body" }, { status: 400 })
   }
@@ -29,8 +52,34 @@ export async function POST(request: Request): Promise<Response> {
     return Response.json({ error: "Enter a valid email." }, { status: 400 })
   }
 
+  // Honeypot filled in: almost certainly a bot. Reject without touching the DB.
+  if (typeof company === "string" && company.trim() !== "") {
+    return Response.json({ error: "Something went wrong. Try again." }, { status: 400 })
+  }
+
   const sql = neon(process.env.DATABASE_URL!)
-  await ensureConfirmationSchema(sql)
+  await Promise.all([ensureConfirmationSchema(sql), ensureRateTable(sql)])
+
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    request.headers.get("x-real-ip") ||
+    "unknown"
+  const ipHash = await hashIp(ip)
+  const [{ attempts }] = await sql`
+    SELECT COUNT(*)::int AS attempts FROM signup_attempts
+    WHERE ip_hash = ${ipHash}
+      AND created_at > now() - make_interval(mins => ${RATE_WINDOW_MINUTES})
+  `
+  if (attempts >= RATE_LIMIT) {
+    return Response.json(
+      { error: "Too many attempts. Try again in a few minutes." },
+      { status: 429 }
+    )
+  }
+  await sql`INSERT INTO signup_attempts (ip_hash) VALUES (${ipHash})`
+  if (Math.random() < 0.02) {
+    await sql`DELETE FROM signup_attempts WHERE created_at < now() - INTERVAL '1 day'`
+  }
   const normalizedEmail = email.trim().toLowerCase()
   const referredBy = typeof ref === "string" && ref.trim() ? ref.trim() : null
 
