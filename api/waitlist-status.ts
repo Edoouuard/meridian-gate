@@ -1,4 +1,5 @@
 import { neon } from "@neondatabase/serverless"
+import { ensureConfirmationSchema } from "./_lib/confirmation.js"
 
 const REFERRAL_BOOST_DAYS = 2
 // Keep in sync with api/waitlist-count.ts and api/waitlist.ts
@@ -13,9 +14,10 @@ export async function GET(request: Request): Promise<Response> {
   }
 
   const sql = neon(process.env.DATABASE_URL!)
+  await ensureConfirmationSchema(sql)
 
   const rows = await sql`
-    SELECT referral_code FROM waitlist_signups WHERE referral_code = ${referralCode}
+    SELECT referral_code, confirmed_at FROM waitlist_signups WHERE referral_code = ${referralCode}
   `
   if (rows.length === 0) {
     return Response.json({ error: "Not found" }, { status: 404 })
@@ -52,5 +54,6 @@ export async function GET(request: Request): Promise<Response> {
     referralCode,
     referralCount,
     position: position + EXTERNAL_SIGNUP_BASE,
+    confirmed: rows[0].confirmed_at !== null,
   })
 }
