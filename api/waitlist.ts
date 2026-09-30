@@ -1,4 +1,9 @@
 import { neon } from "@neondatabase/serverless"
+import {
+  ensureConfirmationSchema,
+  generateConfirmToken,
+  sendConfirmationEmail,
+} from "./_lib/confirmation.js"
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const REFERRAL_BOOST_DAYS = 2
@@ -25,6 +30,7 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   const sql = neon(process.env.DATABASE_URL!)
+  await ensureConfirmationSchema(sql)
   const normalizedEmail = email.trim().toLowerCase()
   const referredBy = typeof ref === "string" && ref.trim() ? ref.trim() : null
 
@@ -36,10 +42,31 @@ export async function POST(request: Request): Promise<Response> {
       (SELECT referral_code FROM waitlist_signups WHERE referral_code = ${referredBy})
     )
     ON CONFLICT (email) DO UPDATE SET email = EXCLUDED.email
-    RETURNING referral_code
+    RETURNING referral_code, confirmed_at
   `
 
   const referralCode = signup.referral_code as string
+  const confirmed = signup.confirmed_at !== null
+
+  // Double opt-in: email a confirmation link unless already confirmed.
+  // Re-sending is throttled to once per 2 minutes per address.
+  if (!confirmed) {
+    const [pending] = await sql`
+      UPDATE waitlist_signups
+      SET confirm_token = COALESCE(confirm_token, ${generateConfirmToken()}),
+          confirm_sent_at = now()
+      WHERE referral_code = ${referralCode}
+        AND (confirm_sent_at IS NULL OR confirm_sent_at < now() - INTERVAL '2 minutes')
+      RETURNING confirm_token
+    `
+    if (pending) {
+      const sent = await sendConfirmationEmail(normalizedEmail, pending.confirm_token as string)
+      if (!sent) {
+        // Let the next attempt retry immediately.
+        await sql`UPDATE waitlist_signups SET confirm_sent_at = NULL WHERE referral_code = ${referralCode}`
+      }
+    }
+  }
 
   const [{ referral_count: referralCount }] = await sql`
     SELECT COUNT(*)::int AS referral_count
@@ -73,5 +100,6 @@ export async function POST(request: Request): Promise<Response> {
     referralCode,
     referralCount,
     position: position + EXTERNAL_SIGNUP_BASE,
+    confirmed,
   })
 }
