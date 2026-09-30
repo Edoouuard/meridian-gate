@@ -83,6 +83,14 @@ function ReferralStatus({ status }: { status: Status }) {
   )}&url=${encodeURIComponent(link)}`
 
   function markDone(id: TaskId) {
+    if (!done[id]) {
+      fetch("/api/track", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: status.referralCode, task: id }),
+        keepalive: true,
+      }).catch(() => {})
+    }
     setDone((prev) => {
       const next = { ...prev, [id]: true }
       try {
@@ -196,6 +204,9 @@ export function WaitlistForm({ id }: { id?: string }) {
   const [error, setError] = useState("")
   const [status, setStatus] = useState<Status | null>(null)
   const [confirmState] = useState(confirmedFromUrl)
+  const [invited] = useState(
+    () => typeof window !== "undefined" && !!new URLSearchParams(window.location.search).get("ref")
+  )
 
   useEffect(() => {
     if (confirmState) {
@@ -279,6 +290,11 @@ export function WaitlistForm({ id }: { id?: string }) {
           ✓ Email confirmed. You're on the list.
         </span>
       )}
+      {invited && id && !confirmState && (
+        <span className="mb-3 rounded-full liquid-glass px-4 py-1.5 text-xs text-foreground">
+          You've been invited by a friend. Join the waitlist below.
+        </span>
+      )}
       {confirmState === "invalid" && (
         <span className="mb-3 text-xs text-destructive">
           This confirmation link is invalid or expired. Sign up again to get a new one.
@@ -319,6 +335,9 @@ export function WaitlistForm({ id }: { id?: string }) {
       {error && (
         <span className="mt-3 text-xs text-destructive">{error}</span>
       )}
+      <p className="mt-3 text-[11px] text-muted-foreground/80">
+        By joining, you agree to receive emails from Meridian. Unsubscribe anytime.
+      </p>
     </div>
   )
 }
