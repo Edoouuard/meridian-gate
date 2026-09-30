@@ -7,6 +7,14 @@ type Status = {
   referralCode: string
   referralCount: number
   position: number
+  confirmed?: boolean
+}
+
+// Set by /api/confirm when the user clicks the link in the confirmation email.
+function confirmedFromUrl(): "1" | "invalid" | null {
+  if (typeof window === "undefined") return null
+  const v = new URLSearchParams(window.location.search).get("confirmed")
+  return v === "1" || v === "invalid" ? v : null
 }
 
 function ReferralStatus({ status }: { status: Status }) {
@@ -31,6 +39,15 @@ function ReferralStatus({ status }: { status: Status }) {
 
   return (
     <div className="liquid-glass rounded-3xl px-6 py-6 sm:px-8 sm:py-7 mt-12 w-full max-w-sm sm:max-w-md text-center animate-fade-rise-delay-2">
+      {status.confirmed ? (
+        <p className="text-muted-foreground text-xs sm:text-sm mb-3">
+          ✓ Email confirmed
+        </p>
+      ) : (
+        <p className="text-foreground text-xs sm:text-sm mb-4 rounded-2xl border border-border/60 px-4 py-3">
+          Check your inbox and click the link to confirm your email.
+        </p>
+      )}
       <p className="text-foreground text-base sm:text-lg">
         You're{" "}
         <span style={{ fontFamily: "'Instrument Serif', serif" }}>
@@ -79,8 +96,16 @@ export function WaitlistForm({ id }: { id?: string }) {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState("")
   const [status, setStatus] = useState<Status | null>(null)
+  const [confirmState] = useState(confirmedFromUrl)
 
   useEffect(() => {
+    if (confirmState) {
+      // Clean the URL so a refresh doesn't show the message again.
+      const url = new URL(window.location.href)
+      url.searchParams.delete("confirmed")
+      window.history.replaceState(null, "", url.toString())
+    }
+
     const savedCode = localStorage.getItem(STORAGE_KEY)
     if (savedCode) {
       fetch(`/api/waitlist-status?code=${encodeURIComponent(savedCode)}`)
@@ -124,6 +149,7 @@ export function WaitlistForm({ id }: { id?: string }) {
         referralCode: body.referralCode,
         referralCount: body.referralCount,
         position: body.position,
+        confirmed: body.confirmed,
       }
       localStorage.setItem(STORAGE_KEY, body.referralCode)
       setStatus(newStatus)
@@ -149,6 +175,16 @@ export function WaitlistForm({ id }: { id?: string }) {
 
   return (
     <div className="flex flex-col items-center w-full max-w-sm sm:max-w-md mt-12 animate-fade-rise-delay-2">
+      {confirmState === "1" && (
+        <span className="mb-3 text-xs text-foreground">
+          ✓ Email confirmed. You're on the list.
+        </span>
+      )}
+      {confirmState === "invalid" && (
+        <span className="mb-3 text-xs text-destructive">
+          This confirmation link is invalid or expired. Sign up again to get a new one.
+        </span>
+      )}
       <form
         id={id}
         onSubmit={handleSubmit}
