@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react"
+import { useEffect, useState, type FormEvent, type ReactNode } from "react"
 import { Copy, Check, Share2 } from "lucide-react"
 
 const STORAGE_KEY = "meridian_referral_code"
@@ -18,8 +18,59 @@ function confirmedFromUrl(): "1" | "invalid" | null {
   return v === "1" || v === "invalid" ? v : null
 }
 
+const TASKS_KEY = "meridian_tasks_done"
+
+type TaskId = "follow" | "share" | "copy"
+
+function loadDone(): Record<TaskId, boolean> {
+  try {
+    return { follow: false, share: false, copy: false, ...JSON.parse(localStorage.getItem(TASKS_KEY) || "{}") }
+  } catch {
+    return { follow: false, share: false, copy: false }
+  }
+}
+
+function XLogo({ size = 14 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} fill="currentColor" aria-hidden="true">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  )
+}
+
+function Task({
+  n,
+  title,
+  done,
+  children,
+}: {
+  n: number
+  title: string
+  done: boolean
+  children: ReactNode
+}) {
+  return (
+    <div className="flex gap-3 text-left py-4 border-t border-white/10 first:border-t-0">
+      <span
+        className={`shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-[11px] transition-colors ${
+          done ? "bg-primary text-primary-foreground" : "border border-white/25 text-muted-foreground"
+        }`}
+      >
+        {done ? <Check size={13} strokeWidth={3} /> : n}
+      </span>
+      <div className="flex-1 min-w-0">
+        <p className={`text-sm ${done ? "text-muted-foreground line-through" : "text-foreground"}`}>
+          {title}
+        </p>
+        <div className="mt-2.5">{children}</div>
+      </div>
+    </div>
+  )
+}
+
 function ReferralStatus({ status }: { status: Status }) {
   const [copied, setCopied] = useState(false)
+  const [done, setDone] = useState<Record<TaskId, boolean>>(loadDone)
   const link =
     typeof window !== "undefined"
       ? `${window.location.origin}/?ref=${status.referralCode}`
@@ -31,12 +82,29 @@ function ReferralStatus({ status }: { status: Status }) {
     tweetText
   )}&url=${encodeURIComponent(link)}`
 
+  function markDone(id: TaskId) {
+    setDone((prev) => {
+      const next = { ...prev, [id]: true }
+      try {
+        localStorage.setItem(TASKS_KEY, JSON.stringify(next))
+      } catch {
+        /* storage unavailable */
+      }
+      return next
+    })
+  }
+
   function handleCopy() {
     navigator.clipboard.writeText(link).then(() => {
       setCopied(true)
+      markDone("copy")
       setTimeout(() => setCopied(false), 2000)
     })
   }
+
+  const completed = Object.values(done).filter(Boolean).length
+  const buttonClass =
+    "rounded-full flex items-center justify-center gap-2 px-4 py-2.5 w-full cursor-pointer hover:scale-[1.02] transition-transform text-xs sm:text-sm"
 
   return (
     <div className="liquid-glass rounded-3xl px-6 py-6 sm:px-8 sm:py-7 mt-12 w-full max-w-sm sm:max-w-md text-center animate-fade-rise-delay-2">
@@ -58,53 +126,64 @@ function ReferralStatus({ status }: { status: Status }) {
       </p>
       <p className="text-muted-foreground text-xs sm:text-sm mt-2">
         {status.referralCount > 0
-          ? `${status.referralCount} friend${status.referralCount === 1 ? "" : "s"} joined through your link. Share it to move up further.`
-          : "Share your link. Every friend who joins moves you up."}
+          ? `${status.referralCount} friend${status.referralCount === 1 ? "" : "s"} joined through your link.`
+          : "Help us spread the word. Friends who join through your link move you up."}
       </p>
 
-      <button
-        type="button"
-        onClick={handleCopy}
-        className="liquid-glass rounded-full flex items-center justify-between gap-3 px-4 sm:px-5 py-2.5 sm:py-3 mt-5 w-full cursor-pointer hover:scale-[1.02] transition-transform"
-      >
-        <span className="text-foreground text-xs sm:text-sm truncate">
-          {link}
-        </span>
-        {copied ? (
-          <Check size={16} className="text-foreground shrink-0" />
-        ) : (
-          <Copy size={16} className="text-muted-foreground shrink-0" />
-        )}
-      </button>
+      <div className="flex items-center justify-between mt-6 mb-1 text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+        <span>Your tasks</span>
+        <span>{completed}/3 done</span>
+      </div>
+      <div className="h-1 rounded-full bg-white/10 overflow-hidden mb-2">
+        <div
+          className="h-full bg-primary transition-all duration-500"
+          style={{ width: `${(completed / 3) * 100}%` }}
+        />
+      </div>
 
-      <a
-        href={tweetUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="liquid-glass rounded-full flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 mt-3 w-full cursor-pointer hover:scale-[1.02] transition-transform"
-      >
-        <Share2 size={15} className="text-muted-foreground shrink-0" />
-        <span className="text-foreground text-xs sm:text-sm">
-          Share on X
-        </span>
-      </a>
-
-      <div className="mt-6 pt-5 border-t border-white/10">
-        <p className="text-muted-foreground text-xs sm:text-sm">
-          Follow us on X to get all the updates.
-        </p>
+      <Task n={1} title="Follow Meridian on X" done={done.follow}>
         <a
           href={X_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="rounded-full bg-primary text-primary-foreground flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 mt-3 w-full cursor-pointer hover:scale-[1.02] transition-transform"
+          onClick={() => markDone("follow")}
+          className={`${buttonClass} bg-primary text-primary-foreground`}
         >
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
-            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-          </svg>
-          <span className="text-xs sm:text-sm">Follow @meridian_thesis</span>
+          <XLogo />
+          <span>Follow @meridian_thesis</span>
         </a>
-      </div>
+      </Task>
+
+      <Task n={2} title="Share a post about Meridian" done={done.share}>
+        <a
+          href={tweetUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => markDone("share")}
+          className={`${buttonClass} liquid-glass text-foreground`}
+        >
+          <Share2 size={15} className="text-muted-foreground shrink-0" />
+          <span>Post on X</span>
+        </a>
+      </Task>
+
+      <Task n={3} title="Copy and share your referral link" done={done.copy}>
+        <button
+          type="button"
+          onClick={handleCopy}
+          className="liquid-glass rounded-full flex items-center justify-between gap-3 px-4 py-2.5 w-full cursor-pointer hover:scale-[1.02] transition-transform"
+        >
+          <span className="text-foreground text-xs sm:text-sm truncate">{link}</span>
+          {copied ? (
+            <Check size={16} className="text-foreground shrink-0" />
+          ) : (
+            <Copy size={16} className="text-muted-foreground shrink-0" />
+          )}
+        </button>
+        <p className="text-muted-foreground text-[11px] mt-2">
+          Each friend who joins through your link moves you up the list.
+        </p>
+      </Task>
     </div>
   )
 }
