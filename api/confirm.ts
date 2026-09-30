@@ -1,5 +1,5 @@
 import { neon } from "@neondatabase/serverless"
-import { ensureConfirmationSchema } from "./_lib/confirmation.js"
+import { addResendContact, ensureConfirmationSchema } from "./_lib/confirmation.js"
 
 export async function GET(request: Request): Promise<Response> {
   const url = new URL(request.url)
@@ -16,7 +16,12 @@ export async function GET(request: Request): Promise<Response> {
     UPDATE waitlist_signups
     SET confirmed_at = COALESCE(confirmed_at, now())
     WHERE confirm_token = ${token}
-    RETURNING referral_code
+    RETURNING email, audience_synced_at
   `
+  if (rows.length && !rows[0].audience_synced_at) {
+    if (await addResendContact(rows[0].email as string)) {
+      await sql`UPDATE waitlist_signups SET audience_synced_at = now() WHERE confirm_token = ${token}`
+    }
+  }
   return redirect(rows.length ? "1" : "invalid")
 }
