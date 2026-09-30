@@ -48,26 +48,6 @@ export async function POST(request: Request): Promise<Response> {
   const referralCode = signup.referral_code as string
   const confirmed = signup.confirmed_at !== null
 
-  // Double opt-in: email a confirmation link unless already confirmed.
-  // Re-sending is throttled to once per 2 minutes per address.
-  if (!confirmed) {
-    const [pending] = await sql`
-      UPDATE waitlist_signups
-      SET confirm_token = COALESCE(confirm_token, ${generateConfirmToken()}),
-          confirm_sent_at = now()
-      WHERE referral_code = ${referralCode}
-        AND (confirm_sent_at IS NULL OR confirm_sent_at < now() - INTERVAL '2 minutes')
-      RETURNING confirm_token
-    `
-    if (pending) {
-      const sent = await sendConfirmationEmail(normalizedEmail, pending.confirm_token as string)
-      if (!sent) {
-        // Let the next attempt retry immediately.
-        await sql`UPDATE waitlist_signups SET confirm_sent_at = NULL WHERE referral_code = ${referralCode}`
-      }
-    }
-  }
-
   const [{ referral_count: referralCount }] = await sql`
     SELECT COUNT(*)::int AS referral_count
     FROM waitlist_signups
@@ -94,6 +74,29 @@ export async function POST(request: Request): Promise<Response> {
       SELECT effective_time FROM scored WHERE referral_code = ${referralCode}
     )
   `
+
+  // Double opt-in: email a confirmation link unless already confirmed.
+  // Re-sending is throttled to once per 2 minutes per address.
+  if (!confirmed) {
+    const [pending] = await sql`
+      UPDATE waitlist_signups
+      SET confirm_token = COALESCE(confirm_token, ${generateConfirmToken()}),
+          confirm_sent_at = now()
+      WHERE referral_code = ${referralCode}
+        AND (confirm_sent_at IS NULL OR confirm_sent_at < now() - INTERVAL '2 minutes')
+      RETURNING confirm_token
+    `
+    if (pending) {
+      const sent = await sendConfirmationEmail(normalizedEmail, pending.confirm_token as string, {
+        position: position + EXTERNAL_SIGNUP_BASE,
+        referralCode,
+      })
+      if (!sent) {
+        // Let the next attempt retry immediately.
+        await sql`UPDATE waitlist_signups SET confirm_sent_at = NULL WHERE referral_code = ${referralCode}`
+      }
+    }
+  }
 
   return Response.json({
     ok: true,
