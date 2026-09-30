@@ -111,6 +111,8 @@ function ReferralStatus({ status }: { status: Status }) {
 
 export function WaitlistForm({ id }: { id?: string }) {
   const [email, setEmail] = useState("")
+  // Honeypot: invisible to humans, bots tend to fill every field.
+  const [company, setCompany] = useState("")
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState("")
   const [status, setStatus] = useState<Status | null>(null)
@@ -157,7 +159,7 @@ export function WaitlistForm({ id }: { id?: string }) {
       const res = await fetch("/api/waitlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, ref }),
+        body: JSON.stringify({ email, ref, company }),
       })
       const body = await res.json().catch(() => ({}))
       if (!res.ok) {
@@ -208,6 +210,16 @@ export function WaitlistForm({ id }: { id?: string }) {
         onSubmit={handleSubmit}
         className="liquid-glass rounded-full flex items-center gap-2 pl-5 pr-1.5 py-1.5 sm:pl-6 sm:pr-2 sm:py-2 w-full"
       >
+        <input
+          type="text"
+          name="hp_field"
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+          value={company}
+          onChange={(e) => setCompany(e.target.value)}
+          style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
+        />
         <input
           type="email"
           required
