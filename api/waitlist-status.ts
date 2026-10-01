@@ -50,7 +50,12 @@ export async function GET(request: Request): Promise<Response> {
     )
   `
 
+  const taskRows = await sql`
+    SELECT task FROM task_events WHERE referral_code = ${referralCode}
+  `
+
   return Response.json({
+    tasks: taskRows.map((r) => r.task as string),
     referralCode,
     referralCount,
     position: position + EXTERNAL_SIGNUP_BASE,
