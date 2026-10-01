@@ -4,6 +4,7 @@ import { Copy, Check, Share2 } from "lucide-react"
 const STORAGE_KEY = "meridian_referral_code"
 const X_URL = "https://x.com/meridian_thesis"
 const ANNOUNCEMENT_URL = "https://x.com/meridian_thesis/status/2105600165583507633"
+const LATEST_POST_URL = "https://x.com/meridian_thesis/status/2105712600105320882"
 
 type Status = {
   referralCode: string
@@ -22,17 +23,17 @@ function confirmedFromUrl(): "1" | "invalid" | null {
 
 const TASKS_KEY = "meridian_tasks_done"
 
-type TaskId = "follow" | "engage" | "share" | "copy"
+type TaskId = "follow" | "engage" | "engage2" | "share" | "copy"
 
 // Points shown to participants. Purely a marketing/engagement signal.
-const TASK_POINTS: Record<TaskId, number> = { follow: 10, engage: 15, share: 10, copy: 5 }
+const TASK_POINTS: Record<TaskId, number> = { follow: 10, engage: 15, engage2: 15, share: 10, copy: 5 }
 const REFERRAL_POINTS = 5
 
 function loadDone(): Record<TaskId, boolean> {
   try {
-    return { follow: false, engage: false, share: false, copy: false, ...JSON.parse(localStorage.getItem(TASKS_KEY) || "{}") }
+    return { follow: false, engage: false, engage2: false, share: false, copy: false, ...JSON.parse(localStorage.getItem(TASKS_KEY) || "{}") }
   } catch {
-    return { follow: false, engage: false, share: false, copy: false }
+    return { follow: false, engage: false, engage2: false, share: false, copy: false }
   }
 }
 
@@ -177,7 +178,7 @@ function ReferralStatus({ status }: { status: Status }) {
       </p>
 
       <div className="flex items-center justify-between mt-6 mb-1 text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
-        <span>Your tasks · {completed}/4 done</span>
+        <span>Your tasks · {completed}/5 done</span>
         <span className="text-foreground text-sm normal-case tracking-normal font-medium tabular-nums">
           {points} pts
         </span>
@@ -185,7 +186,7 @@ function ReferralStatus({ status }: { status: Status }) {
       <div className="h-1 rounded-full bg-white/10 overflow-hidden mb-2">
         <div
           className="h-full bg-primary transition-all duration-500"
-          style={{ width: `${(completed / 4) * 100}%` }}
+          style={{ width: `${(completed / 5) * 100}%` }}
         />
       </div>
 
@@ -215,7 +216,20 @@ function ReferralStatus({ status }: { status: Status }) {
         </a>
       </Task>
 
-      <Task n={3} title="Share a post about Meridian" points={`+${TASK_POINTS.share} pts`} done={done.share}>
+      <Task n={3} title="Comment, like & repost our latest post" points={`+${TASK_POINTS.engage2} pts`} done={done.engage2}>
+        <a
+          href={LATEST_POST_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => markDone("engage2")}
+          className={`${buttonClass} liquid-glass text-foreground`}
+        >
+          <XLogo />
+          <span>Open the post</span>
+        </a>
+      </Task>
+
+      <Task n={4} title="Share a post about Meridian" points={`+${TASK_POINTS.share} pts`} done={done.share}>
         <a
           href={tweetUrl}
           target="_blank"
@@ -228,7 +242,7 @@ function ReferralStatus({ status }: { status: Status }) {
         </a>
       </Task>
 
-      <Task n={4} title="Copy and share your referral link" points={`+${TASK_POINTS.copy} pts`} done={done.copy}>
+      <Task n={5} title="Copy and share your referral link" points={`+${TASK_POINTS.copy} pts`} done={done.copy}>
         <button
           type="button"
           onClick={handleCopy}
