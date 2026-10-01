@@ -1,7 +1,7 @@
 import { neon } from "@neondatabase/serverless"
 import { ensureConfirmationSchema } from "./_lib/confirmation.js"
 
-const TASKS = new Set(["follow", "share", "copy"])
+const TASKS = new Set(["follow", "engage", "share", "copy"])
 
 // Records that a signup clicked one of the post-signup tasks (shown in the back office).
 export async function POST(request: Request): Promise<Response> {
