@@ -9,6 +9,7 @@ type Status = {
   referralCount: number
   position: number
   confirmed?: boolean
+  tasks?: string[]
 }
 
 // Set by /api/confirm when the user clicks the link in the confirmation email.
@@ -21,6 +22,10 @@ function confirmedFromUrl(): "1" | "invalid" | null {
 const TASKS_KEY = "meridian_tasks_done"
 
 type TaskId = "follow" | "share" | "copy"
+
+// Points shown to participants. Purely a marketing/engagement signal.
+const TASK_POINTS: Record<TaskId, number> = { follow: 10, share: 10, copy: 5 }
+const REFERRAL_POINTS = 5
 
 function loadDone(): Record<TaskId, boolean> {
   try {
@@ -41,11 +46,13 @@ function XLogo({ size = 14 }: { size?: number }) {
 function Task({
   n,
   title,
+  points,
   done,
   children,
 }: {
   n: number
   title: string
+  points: string
   done: boolean
   children: ReactNode
 }) {
@@ -59,9 +66,18 @@ function Task({
         {done ? <Check size={13} strokeWidth={3} /> : n}
       </span>
       <div className="flex-1 min-w-0">
-        <p className={`text-sm ${done ? "text-muted-foreground line-through" : "text-foreground"}`}>
-          {title}
-        </p>
+        <div className="flex items-center justify-between gap-2">
+          <p className={`text-sm ${done ? "text-muted-foreground line-through" : "text-foreground"}`}>
+            {title}
+          </p>
+          <span
+            className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium tabular-nums ${
+              done ? "bg-white/10 text-muted-foreground" : "bg-primary text-primary-foreground"
+            }`}
+          >
+            {points}
+          </span>
+        </div>
         <div className="mt-2.5">{children}</div>
       </div>
     </div>
@@ -110,7 +126,28 @@ function ReferralStatus({ status }: { status: Status }) {
     })
   }
 
+  // Tasks recorded on the server (e.g. completed on another device).
+  useEffect(() => {
+    const serverTasks = (status.tasks || []).filter((t): t is TaskId => t in TASK_POINTS)
+    if (serverTasks.some((t) => !done[t])) {
+      setDone((prev) => {
+        const next = { ...prev }
+        for (const t of serverTasks) next[t] = true
+        try {
+          localStorage.setItem(TASKS_KEY, JSON.stringify(next))
+        } catch {
+          /* storage unavailable */
+        }
+        return next
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status.tasks])
+
   const completed = Object.values(done).filter(Boolean).length
+  const points =
+    (Object.keys(TASK_POINTS) as TaskId[]).reduce((sum, t) => sum + (done[t] ? TASK_POINTS[t] : 0), 0) +
+    status.referralCount * REFERRAL_POINTS
   const buttonClass =
     "rounded-full flex items-center justify-center gap-2 px-4 py-2.5 w-full cursor-pointer hover:scale-[1.02] transition-transform text-xs sm:text-sm"
 
@@ -139,8 +176,10 @@ function ReferralStatus({ status }: { status: Status }) {
       </p>
 
       <div className="flex items-center justify-between mt-6 mb-1 text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
-        <span>Your tasks</span>
-        <span>{completed}/3 done</span>
+        <span>Your tasks · {completed}/3 done</span>
+        <span className="text-foreground text-sm normal-case tracking-normal font-medium tabular-nums">
+          {points} pts
+        </span>
       </div>
       <div className="h-1 rounded-full bg-white/10 overflow-hidden mb-2">
         <div
@@ -149,7 +188,7 @@ function ReferralStatus({ status }: { status: Status }) {
         />
       </div>
 
-      <Task n={1} title="Follow Meridian on X" done={done.follow}>
+      <Task n={1} title="Follow Meridian on X" points={`+${TASK_POINTS.follow} pts`} done={done.follow}>
         <a
           href={X_URL}
           target="_blank"
@@ -162,7 +201,7 @@ function ReferralStatus({ status }: { status: Status }) {
         </a>
       </Task>
 
-      <Task n={2} title="Share a post about Meridian" done={done.share}>
+      <Task n={2} title="Share a post about Meridian" points={`+${TASK_POINTS.share} pts`} done={done.share}>
         <a
           href={tweetUrl}
           target="_blank"
@@ -175,7 +214,7 @@ function ReferralStatus({ status }: { status: Status }) {
         </a>
       </Task>
 
-      <Task n={3} title="Copy and share your referral link" done={done.copy}>
+      <Task n={3} title="Copy and share your referral link" points={`+${TASK_POINTS.copy} pts`} done={done.copy}>
         <button
           type="button"
           onClick={handleCopy}
@@ -188,9 +227,15 @@ function ReferralStatus({ status }: { status: Status }) {
             <Copy size={16} className="text-muted-foreground shrink-0" />
           )}
         </button>
-        <p className="text-muted-foreground text-[11px] mt-2">
-          Each friend who joins through your link moves you up the list.
-        </p>
+        <div className="flex items-center justify-between gap-2 mt-3 rounded-2xl border border-white/10 px-3 py-2">
+          <span className="text-[11px] sm:text-xs text-muted-foreground text-left">
+            Each friend who joins through your link
+            {status.referralCount > 0 ? ` (${status.referralCount} so far)` : ""}
+          </span>
+          <span className="shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium bg-primary text-primary-foreground">
+            +{REFERRAL_POINTS} pts each
+          </span>
+        </div>
       </Task>
     </div>
   )
