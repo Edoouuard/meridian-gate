@@ -3,7 +3,7 @@ import { Copy, Check, Share2 } from "lucide-react"
 
 const STORAGE_KEY = "meridian_referral_code"
 const X_URL = "https://x.com/meridian_thesis"
-const ANNOUNCEMENT_URL = "https://x.com/meridian_thesis/status/2105591620951519235"
+const ANNOUNCEMENT_URL = "https://x.com/meridian_thesis/status/2105600165583507633"
 
 type Status = {
   referralCode: string
