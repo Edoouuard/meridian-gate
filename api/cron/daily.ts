@@ -5,6 +5,7 @@ import {
   ensureConfirmationSchema,
   renderConfirmationEmail,
   sendBatch,
+  backupSnapshot,
 } from "../_lib/confirmation.js"
 
 // Runs once a day (vercel.json). Two jobs:
@@ -22,6 +23,14 @@ export async function GET(request: Request): Promise<Response> {
 
   const sql = neon(process.env.DATABASE_URL!)
   await ensureConfirmationSchema(sql)
+
+  // 0. Daily full backup of the waitlist (CSV in the private Blob store).
+  let backedUp = -1
+  try {
+    backedUp = await backupSnapshot(sql)
+  } catch (err) {
+    console.error("backupSnapshot failed", err)
+  }
 
   // 1. Reminders
   const pending = await sql`
@@ -67,5 +76,5 @@ export async function GET(request: Request): Promise<Response> {
     await new Promise((res) => setTimeout(res, 600)) // stay under Resend's rate limit
   }
 
-  return Response.json({ reminded, synced })
+  return Response.json({ backedUp, reminded, synced })
 }
