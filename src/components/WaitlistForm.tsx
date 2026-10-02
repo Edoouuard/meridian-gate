@@ -4,7 +4,7 @@ import { Copy, Check, Share2 } from "lucide-react"
 const STORAGE_KEY = "meridian_referral_code"
 const X_URL = "https://x.com/meridian_thesis"
 const ANNOUNCEMENT_URL = "https://x.com/meridian_thesis/status/2105600165583507633"
-const LATEST_POST_URL = "https://x.com/meridian_thesis/status/2105712600105320882"
+const LATEST_POST_URL = "https://x.com/meridian_thesis/status/2105962397433504178"
 
 type Status = {
   referralCode: string
@@ -216,7 +216,7 @@ function ReferralStatus({ status }: { status: Status }) {
         </a>
       </Task>
 
-      <Task n={3} title="Comment, like & repost our latest post" points={`+${TASK_POINTS.engage2} pts`} done={done.engage2}>
+      <Task n={3} title="Comment, like & repost our launch video" points={`+${TASK_POINTS.engage2} pts`} done={done.engage2}>
         <a
           href={LATEST_POST_URL}
           target="_blank"
@@ -225,7 +225,7 @@ function ReferralStatus({ status }: { status: Status }) {
           className={`${buttonClass} liquid-glass text-foreground`}
         >
           <XLogo />
-          <span>Open the post</span>
+          <span>Watch the launch video</span>
         </a>
       </Task>
 
