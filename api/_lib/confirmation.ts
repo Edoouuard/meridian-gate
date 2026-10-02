@@ -1,4 +1,5 @@
 import type { NeonQueryFunction } from "@neondatabase/serverless"
+import { put } from "@vercel/blob"
 
 // Double opt-in: every signup gets a confirmation email with a one-time link.
 // Columns are added lazily (once per cold start) so no manual migration is
@@ -238,4 +239,60 @@ export async function addResendContact(email: string): Promise<boolean> {
     console.error("[contacts] Resend request failed", err)
     return false
   }
+}
+
+// Backup of the waitlist in a private Vercel Blob store, independent of Neon.
+// - signups/YYYY-MM-DD/<time>-<code>.json : one file per new signup, written in real time
+// - snapshots/waitlist-YYYY-MM-DD.csv     : full table export, written daily by the cron
+// Everything is a no-op until BLOB_READ_WRITE_TOKEN is set (store connected to the project).
+const enabled = () => Boolean(process.env.BLOB_READ_WRITE_TOKEN)
+
+export async function backupSignup(row: {
+  email: string
+  referral_code: string
+  referred_by: string | null
+  created_at: string | Date
+}): Promise<void> {
+  if (!enabled()) return
+  try {
+    const iso = new Date(row.created_at).toISOString()
+    await put(
+      `signups/${iso.slice(0, 10)}/${iso.replace(/[:.]/g, "-")}-${row.referral_code}.json`,
+      JSON.stringify({ ...row, created_at: iso }),
+      { access: "private", contentType: "application/json", addRandomSuffix: false, allowOverwrite: true },
+    )
+  } catch (err) {
+    console.error("backupSignup failed", err)
+  }
+}
+
+const COLUMNS = [
+  "email",
+  "created_at",
+  "confirmed_at",
+  "referral_code",
+  "referred_by",
+  "reminder_sent_at",
+  "audience_synced_at",
+] as const
+
+const csvCell = (v: unknown) => {
+  if (v === null || v === undefined) return ""
+  const s = v instanceof Date ? v.toISOString() : String(v)
+  return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
+}
+
+export async function backupSnapshot(sql: NeonQueryFunction<false, false>): Promise<number> {
+  if (!enabled()) return -1
+  const rows = await sql`
+    SELECT email, created_at, confirmed_at, referral_code, referred_by, reminder_sent_at, audience_synced_at
+    FROM waitlist_signups ORDER BY created_at
+  `
+  const csv =
+    "\uFEFF" +
+    [COLUMNS.join(","), ...rows.map((r) => COLUMNS.map((c) => csvCell(r[c])).join(","))].join("\n")
+  const day = new Date().toISOString().slice(0, 10)
+  const opts = { access: "private" as const, contentType: "text/csv", addRandomSuffix: false, allowOverwrite: true }
+  await put(`snapshots/waitlist-${day}.csv`, csv, opts)
+  return rows.length
 }
