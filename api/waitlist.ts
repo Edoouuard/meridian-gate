@@ -3,6 +3,7 @@ import {
   ensureConfirmationSchema,
   generateConfirmToken,
   sendConfirmationEmail,
+  backupSignup,
 } from "./_lib/confirmation.js"
 
 // Anti-spam: max signup attempts per IP in a rolling window.
@@ -91,8 +92,18 @@ export async function POST(request: Request): Promise<Response> {
       (SELECT referral_code FROM waitlist_signups WHERE referral_code = ${referredBy})
     )
     ON CONFLICT (email) DO UPDATE SET email = EXCLUDED.email
-    RETURNING referral_code, confirmed_at
+    RETURNING referral_code, referred_by, created_at, confirmed_at, (xmax = 0) AS inserted
   `
+
+  // Real-time backup copy of every new signup (independent of the database).
+  if (signup.inserted) {
+    await backupSignup({
+      email: normalizedEmail,
+      referral_code: signup.referral_code as string,
+      referred_by: (signup.referred_by as string | null) ?? null,
+      created_at: signup.created_at as string,
+    })
+  }
 
   const referralCode = signup.referral_code as string
   const confirmed = signup.confirmed_at !== null
