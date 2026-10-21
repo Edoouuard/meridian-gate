@@ -1,8 +1,7 @@
-import type { ReactNode } from "react"
+import { useId, type ReactNode } from "react"
 import { Check, Fingerprint, Newspaper, Route, ShieldCheck, Wallet, Activity } from "lucide-react"
 import { Container, SectionHeading } from "@/components/Section"
 import { Reveal } from "@/components/Reveal"
-import { HealthGauge } from "@/components/ProductMockup"
 import { cn } from "@/lib/utils"
 
 function FeatureCard({
@@ -39,6 +38,37 @@ function FeatureCard({
 }
 
 /* ---------- Visuals ---------- */
+
+/** Health-factor gauge: a half-ring with a needle. */
+function HealthGauge({ value = 1.81 }: { value?: number }) {
+  // map 1.0 → 3.0 onto 0 → 180deg
+  const t = Math.min(Math.max((value - 1) / 2, 0), 1)
+  const angle = -90 + t * 180
+  const gid = `hf-${useId().replace(/:/g, "")}`
+  return (
+    <svg viewBox="0 0 120 68" className="w-full" aria-hidden="true">
+      <defs>
+        <linearGradient id={gid} x1="0" x2="1">
+          <stop offset="0" stopColor="var(--negative)" />
+          <stop offset="0.35" stopColor="#f5a524" />
+          <stop offset="0.7" stopColor="var(--positive)" />
+        </linearGradient>
+      </defs>
+      <path
+        d="M 10 60 A 50 50 0 0 1 110 60"
+        fill="none"
+        stroke={`url(#${gid})`}
+        strokeWidth="7"
+        strokeLinecap="round"
+      />
+      <g transform={`rotate(${angle} 60 60)`}>
+        <line x1="60" y1="60" x2="60" y2="20" stroke="var(--ink)" strokeWidth="2" strokeLinecap="round" />
+      </g>
+      <circle cx="60" cy="60" r="4" fill="var(--ink)" />
+    </svg>
+  )
+}
+
 
 const BARS = [38, 44, 41, 52, 49, 58, 55, 63, 61, 70, 68, 76]
 

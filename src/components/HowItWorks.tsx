@@ -29,7 +29,7 @@ export function HowItWorks() {
       <div className="bg-grid-night pointer-events-none absolute inset-0" aria-hidden="true" />
       <div
         className="pointer-events-none absolute -right-40 top-10 h-[420px] w-[620px] rounded-full opacity-40 blur-3xl"
-        style={{ background: "radial-gradient(closest-side, #2f54ff, transparent)" }}
+        style={{ background: "radial-gradient(closest-side, #a8722a, transparent)" }}
         aria-hidden="true"
       />
 

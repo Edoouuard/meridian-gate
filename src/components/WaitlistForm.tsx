@@ -269,7 +269,8 @@ function ReferralStatus({ status }: { status: Status }) {
   )
 }
 
-export function WaitlistForm({ id }: { id?: string }) {
+export function WaitlistForm({ id, tone = "light" }: { id?: string; tone?: "light" | "dark" }) {
+  const dark = tone === "dark"
   const [email, setEmail] = useState("")
   // Honeypot: invisible to humans, bots tend to fill every field.
   const [company, setCompany] = useState("")
@@ -359,7 +360,7 @@ export function WaitlistForm({ id }: { id?: string }) {
   return (
     <div className="flex flex-col items-center w-full max-w-sm sm:max-w-md mt-10 animate-fade-rise-delay-2">
       {confirmState === "1" && (
-        <span className="mb-3 text-xs text-foreground">
+        <span className={`mb-3 text-xs ${dark ? "text-white" : "text-ink"}`}>
           ✓ Email confirmed. You're on the list.
         </span>
       )}
@@ -409,7 +410,7 @@ export function WaitlistForm({ id }: { id?: string }) {
       {error && (
         <span className="mt-3 text-xs text-destructive">{error}</span>
       )}
-      <p className="mt-3 text-[11px] text-ink-3">
+      <p className={`mt-3 text-[11px] ${dark ? "text-white/45" : "text-ink-3"}`}>
         By joining, you agree to receive emails from Meridian. Unsubscribe anytime.
       </p>
     </div>
