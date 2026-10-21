@@ -6,7 +6,7 @@ import { ThreadPane, type Thread } from "./ThreadPane"
 import { Seg } from "./ui"
 import { SCENARIOS, START_HOLDINGS, matchScenario, type Holding, type Scenario } from "./data"
 import { cn } from "@/lib/utils"
-import { RUN_THESIS_EVENT } from "@/components/motion/TypingPrompt"
+import { RUN_THESIS_EVENT } from "@/components/ThesisDemo"
 
 const THINK_MS = 650
 const STEP_MS = 850
@@ -161,7 +161,7 @@ export function LiveTerminal() {
     }
   }, [submit])
 
-  // The hero's typing prompt can hand a thesis straight to the demo.
+  // The hero's typing demo can hand a thesis straight to the live terminal.
   useEffect(() => {
     const onRun = (e: Event) => {
       const text = (e as CustomEvent<string>).detail

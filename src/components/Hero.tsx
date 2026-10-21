@@ -2,7 +2,7 @@ import { Container } from "@/components/Section"
 import { WaitlistForm } from "@/components/WaitlistForm"
 import { SocialProof } from "@/components/SocialProof"
 import { SplitWords } from "@/components/motion/SplitWords"
-import { TypingPrompt } from "@/components/motion/TypingPrompt"
+import { ThesisDemo } from "@/components/ThesisDemo"
 
 export function Hero() {
   return (
@@ -38,12 +38,13 @@ export function Hero() {
           trade across every major protocol, with the risk shown before you sign.
         </p>
 
-        <div className="animate-fade-rise-delay-3 flex w-full flex-col items-center">
-          <TypingPrompt />
-        </div>
-
         <WaitlistForm id="waitlist" />
         <SocialProof />
+
+        {/* the thesis types itself, then Meridian shows what it would do */}
+        <div className="animate-fade-rise-delay-3 mt-12 w-full max-w-xl">
+          <ThesisDemo />
+        </div>
       </Container>
     </section>
   )
