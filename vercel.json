@@ -1,5 +1,7 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "crons": [{ "path": "/api/cron/daily", "schedule": "0 8 * * *" }]
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://www.meridian-terminal.com/api/:path*" }
+  ]
 }
