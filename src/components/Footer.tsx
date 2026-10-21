@@ -3,7 +3,7 @@ import { Container, Logo, XLogo } from "@/components/Section"
 const LINKS = [
   { label: "How it works", href: "#how-it-works" },
   { label: "Features", href: "#features" },
-  { label: "Coverage", href: "#coverage" },
+  { label: "Live demo", href: "#demo" },
   { label: "FAQ", href: "#faq" },
 ]
 

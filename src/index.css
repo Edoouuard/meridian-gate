@@ -9,8 +9,8 @@
 
 /* ------------------------------------------------------------------
    Meridian design tokens
-   Light, warm "paper" surface · near-black ink · Meridian gold accent
-   (the same gold the terminal itself uses).
+   Light, warm "paper" surface · near-black ink · one electric accent.
+   The terminal replica keeps its own gold tokens (--t-*).
    ------------------------------------------------------------------ */
 :root {
   --font-display: 'Space Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
@@ -27,14 +27,14 @@
   --ink-3: #8a9099;
   --line: #e4e0d9;
   --line-strong: #d3cec5;
-  --accent: #a8722a;
+  --accent: #2f54ff;
   --accent-ink: #ffffff;
-  --accent-soft: #fff3e4;
+  --accent-soft: #e6ebff;
   --positive: #0f9d58;
   --negative: #e5484d;
-  --night: #11100e;
-  --night-2: #1b1916;
-  --night-line: #2f2b25;
+  --night: #0a1118;
+  --night-2: #131c26;
+  --night-line: #233040;
 
   /* Terminal replica: tokens copied from meridian-terminal globals.css */
   --t-bg: #f3f2f2;
@@ -218,10 +218,10 @@
 @keyframes pulse-dot {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgb(182 130 53 / 0.5);
+    box-shadow: 0 0 0 0 rgb(47 84 255 / 0.45);
   }
   50% {
-    box-shadow: 0 0 0 6px rgb(182 130 53 / 0);
+    box-shadow: 0 0 0 6px rgb(47 84 255 / 0);
   }
 }
 .pulse-dot {

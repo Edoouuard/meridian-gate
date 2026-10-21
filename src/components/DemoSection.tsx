@@ -5,7 +5,7 @@ import { LiveTerminal } from "@/components/terminal/LiveTerminal"
 
 export function DemoSection() {
   return (
-    <section id="demo" className="relative pb-24 pt-6 sm:pb-32">
+    <section id="demo" className="relative border-t border-line bg-surface py-16 sm:py-20">
       <Container className="max-w-7xl">
         <Reveal>
           <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
@@ -24,7 +24,7 @@ export function DemoSection() {
             </p>
           </div>
         </Reveal>
-        <Reveal delay={120} className="mt-10 sm:mt-12">
+        <Reveal delay={120} className="mt-8 sm:mt-10">
           <LiveTerminal />
         </Reveal>
       </Container>

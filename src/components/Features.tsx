@@ -1,5 +1,5 @@
-import { useId, type ReactNode } from "react"
-import { Check, Fingerprint, Newspaper, Route, ShieldCheck, Wallet, Activity } from "lucide-react"
+import type { ReactNode } from "react"
+import { Check, Fingerprint, Newspaper, Route, Wallet } from "lucide-react"
 import { Container, SectionHeading } from "@/components/Section"
 import { Reveal } from "@/components/Reveal"
 import { cn } from "@/lib/utils"
@@ -39,84 +39,9 @@ function FeatureCard({
 
 /* ---------- Visuals ---------- */
 
-/** Health-factor gauge: a half-ring with a needle. */
-function HealthGauge({ value = 1.81 }: { value?: number }) {
-  // map 1.0 → 3.0 onto 0 → 180deg
-  const t = Math.min(Math.max((value - 1) / 2, 0), 1)
-  const angle = -90 + t * 180
-  const gid = `hf-${useId().replace(/:/g, "")}`
-  return (
-    <svg viewBox="0 0 120 68" className="w-full" aria-hidden="true">
-      <defs>
-        <linearGradient id={gid} x1="0" x2="1">
-          <stop offset="0" stopColor="var(--negative)" />
-          <stop offset="0.35" stopColor="#f5a524" />
-          <stop offset="0.7" stopColor="var(--positive)" />
-        </linearGradient>
-      </defs>
-      <path
-        d="M 10 60 A 50 50 0 0 1 110 60"
-        fill="none"
-        stroke={`url(#${gid})`}
-        strokeWidth="7"
-        strokeLinecap="round"
-      />
-      <g transform={`rotate(${angle} 60 60)`}>
-        <line x1="60" y1="60" x2="60" y2="20" stroke="var(--ink)" strokeWidth="2" strokeLinecap="round" />
-      </g>
-      <circle cx="60" cy="60" r="4" fill="var(--ink)" />
-    </svg>
-  )
-}
 
 
-const BARS = [38, 44, 41, 52, 49, 58, 55, 63, 61, 70, 68, 76]
 
-function PortfolioVisual() {
-  const chains = ["Ethereum", "Base", "Arbitrum", "Optimism", "Polygon", "Avalanche"]
-  return (
-    <div className="w-full max-w-md">
-      <div className="flex flex-wrap gap-1.5">
-        {chains.map((c) => (
-          <span key={c} className="rounded-md border border-line bg-surface px-2 py-1 font-mono text-[10px] text-ink-2">
-            {c}
-          </span>
-        ))}
-      </div>
-      <div className="mt-4 rounded-xl border border-line bg-surface p-4">
-        <div className="flex items-end justify-between">
-          <div>
-            <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink-3">All chains · all protocols</div>
-            <div className="mt-1 font-display text-2xl font-medium tracking-tight text-ink">$127,530</div>
-          </div>
-          <span className="font-mono text-xs text-positive">+18.4% 30d</span>
-        </div>
-        <div className="mt-4 flex h-20 items-end gap-1.5">
-          {BARS.map((h, i) => (
-            <span
-              key={i}
-              className="flex-1 rounded-t-[3px] transition-all duration-500 group-hover:opacity-100"
-              style={{
-                height: `${h}%`,
-                background: i === BARS.length - 1 ? "var(--accent)" : "var(--paper-2)",
-              }}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function RiskVisual() {
-  return (
-    <div className="w-full max-w-[220px] text-center">
-      <HealthGauge value={1.65} />
-      <div className="-mt-1 font-display text-3xl font-medium tracking-tight text-ink">1.65</div>
-      <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink-3">Health factor</div>
-    </div>
-  )
-}
 
 function RouteVisual() {
   const rows = [
@@ -198,7 +123,7 @@ function CustodyVisual() {
 
 export function Features() {
   return (
-    <section id="features" className="py-24 sm:py-32">
+    <section id="features" className="py-20 sm:py-24">
       <Container>
         <Reveal>
           <SectionHeading
@@ -212,24 +137,7 @@ export function Features() {
           />
         </Reveal>
 
-        <div className="mt-14 grid gap-4 md:grid-cols-6">
-          <FeatureCard
-            className="md:col-span-4"
-            icon={<Activity size={16} />}
-            title="Portfolio, unified"
-            body="Every position on every chain in one clean view, instead of a dozen open tabs."
-          >
-            <PortfolioVisual />
-          </FeatureCard>
-          <FeatureCard
-            className="md:col-span-2"
-            delay={80}
-            icon={<ShieldCheck size={16} />}
-            title="Risk you can see"
-            body="Health factor, net delta and concentration, visualized before they become a problem."
-          >
-            <RiskVisual />
-          </FeatureCard>
+        <div className="mt-10 grid gap-4 md:grid-cols-6">
           <FeatureCard
             className="md:col-span-2"
             icon={<Route size={16} />}
