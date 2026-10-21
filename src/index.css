@@ -1,4 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500&display=swap');
+@import "@fontsource/cormorant-garamond/500.css";
+@import "@fontsource/cormorant-garamond/600.css";
+@import "@fontsource-variable/lora";
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -28,6 +31,19 @@
   --border: 0 0% 18%;
   --input: 0 0% 18%;
   --ring: 0 0% 40%;
+
+  /* Live terminal replica: tokens copied from meridian-terminal globals.css */
+  --t-bg: #f3f2f2;
+  --t-surface: #eae9e9;
+  --t-text: #201f1d;
+  --t-accent: #b68235;
+  --t-accent-100: #fff3e4;
+  --t-accent-800: #5a3b0a;
+  --t-muted: #7d7979;
+  --t-line: rgb(32 31 29 / 0.16);
+  --t-good: #3f7a44;
+  --t-warn: #b8791f;
+  --t-bad: #a63f31;
 }
 
 @theme inline {
@@ -55,6 +71,20 @@
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.4);
+
+  --color-t-bg: var(--t-bg);
+  --color-t-surface: var(--t-surface);
+  --color-t-text: var(--t-text);
+  --color-t-accent: var(--t-accent);
+  --color-t-accent-100: var(--t-accent-100);
+  --color-t-accent-800: var(--t-accent-800);
+  --color-t-muted: var(--t-muted);
+  --color-t-line: var(--t-line);
+  --color-t-good: var(--t-good);
+  --color-t-warn: var(--t-warn);
+  --color-t-bad: var(--t-bad);
+  --font-t-head: "Cormorant Garamond", Georgia, serif;
+  --font-t-body: "Lora Variable", Georgia, serif;
 }
 
 @layer base {
@@ -174,4 +204,32 @@
 
 body {
   margin: 0;
+}
+
+/* ---------- Live terminal replica ---------- */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-marquee { animation: marquee 38s linear infinite; }
+.marquee-mask {
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+@keyframes pulse-dot {
+  0%, 100% { box-shadow: 0 0 0 0 rgb(63 122 68 / 0.45); }
+  50% { box-shadow: 0 0 0 5px rgb(63 122 68 / 0); }
+}
+.pulse-dot { animation: pulse-dot 2.2s ease-in-out infinite; }
+.mt-scroll { overflow-y: auto; scrollbar-width: thin; scrollbar-color: #d7d3d3 transparent; }
+.mt-scroll::-webkit-scrollbar { width: 6px; }
+.mt-scroll::-webkit-scrollbar-thumb { background: #d7d3d3; border-radius: 3px; }
+@keyframes mt-flash-up { from { background: rgb(63 122 68 / 0.18); } to { background: transparent; } }
+@keyframes mt-flash-down { from { background: rgb(166 63 49 / 0.16); } to { background: transparent; } }
+.mt-flash-up { animation: mt-flash-up 0.9s ease-out; }
+.mt-flash-down { animation: mt-flash-down 0.9s ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee,
+  .pulse-dot { animation: none; }
 }
