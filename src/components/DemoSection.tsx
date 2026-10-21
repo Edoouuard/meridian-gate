@@ -2,6 +2,7 @@ import { MousePointerClick } from "lucide-react"
 import { Container, SectionHeading } from "@/components/Section"
 import { Reveal } from "@/components/Reveal"
 import { LiveTerminal } from "@/components/terminal/LiveTerminal"
+import { ScrollTilt } from "@/components/motion/ScrollTilt"
 
 export function DemoSection() {
   return (
@@ -24,9 +25,9 @@ export function DemoSection() {
             </p>
           </div>
         </Reveal>
-        <Reveal delay={120} className="mt-8 sm:mt-10">
+        <ScrollTilt className="mt-8 sm:mt-10">
           <LiveTerminal />
-        </Reveal>
+        </ScrollTilt>
       </Container>
     </section>
   )

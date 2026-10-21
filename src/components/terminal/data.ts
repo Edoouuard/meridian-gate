@@ -380,9 +380,11 @@ export function matchScenario(text: string): Scenario {
   const t = text.toLowerCase()
   let best = SCENARIOS[0]
   let bestScore = 0
+  // On a tie the later, more specific scenario wins ("lock in a fixed yield"
+  // is a fixed-rate request, not a generic yield one).
   for (const s of SCENARIOS) {
     const score = s.keywords.reduce((n, k) => n + (t.includes(k) ? 1 : 0), 0)
-    if (score > bestScore) {
+    if (score > 0 && score >= bestScore) {
       best = s
       bestScore = score
     }

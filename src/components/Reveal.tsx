@@ -15,7 +15,7 @@ export function Reveal({
   return (
     <div
       ref={ref}
-      className={className}
+      className={`${className} ${inView ? "is-in" : ""}`}
       style={{
         opacity: inView ? 1 : 0,
         filter: inView ? "blur(0px)" : "blur(6px)",
