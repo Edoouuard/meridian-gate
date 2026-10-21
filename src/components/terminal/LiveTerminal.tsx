@@ -6,6 +6,7 @@ import { ThreadPane, type Thread } from "./ThreadPane"
 import { Seg } from "./ui"
 import { SCENARIOS, START_HOLDINGS, matchScenario, type Holding, type Scenario } from "./data"
 import { cn } from "@/lib/utils"
+import { RUN_THESIS_EVENT } from "@/components/motion/TypingPrompt"
 
 const THINK_MS = 650
 const STEP_MS = 850
@@ -158,6 +159,18 @@ export function LiveTerminal() {
       io.disconnect()
       if (typing) clearInterval(typing)
     }
+  }, [submit])
+
+  // The hero's typing prompt can hand a thesis straight to the demo.
+  useEffect(() => {
+    const onRun = (e: Event) => {
+      const text = (e as CustomEvent<string>).detail
+      if (!text) return
+      touched.current = true
+      setTimeout(() => submit(text), 500)
+    }
+    window.addEventListener(RUN_THESIS_EVENT, onRun)
+    return () => window.removeEventListener(RUN_THESIS_EVENT, onRun)
   }, [submit])
 
   const markTouched = () => {

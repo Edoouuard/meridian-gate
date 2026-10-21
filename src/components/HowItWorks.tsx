@@ -59,7 +59,8 @@ export function HowItWorks() {
         <div className="flex flex-col border-b border-night-line">
           {STEPS.map((s, i) => (
             <Reveal key={s.n} delay={i * 120}>
-              <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-5 sm:gap-x-6 border-t border-night-line py-6">
+              <div className="relative grid grid-cols-[auto_minmax(0,1fr)] gap-x-5 sm:gap-x-6 border-t border-night-line py-6">
+                <span className="draw-line absolute -top-px left-0 h-px w-full bg-accent" style={{ transitionDelay: `${150 + i * 120}ms` }} />
                 <span className="font-mono text-sm text-accent">{s.n}</span>
                 <div>
                   <h3 className="text-2xl tracking-tight text-white">{s.title}</h3>
