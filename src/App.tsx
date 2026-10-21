@@ -1,7 +1,7 @@
 import { Analytics } from "@vercel/analytics/react"
 import { Nav } from "@/components/Nav"
 import { Hero } from "@/components/Hero"
-import { ProtocolLogos } from "@/components/ProtocolLogos"
+import { DemoSection } from "@/components/DemoSection"
 import { HowItWorks } from "@/components/HowItWorks"
 import { Features } from "@/components/Features"
 import { FAQ } from "@/components/FAQ"
@@ -14,7 +14,7 @@ function App() {
       <Nav />
       <main>
         <Hero />
-        <ProtocolLogos />
+        <DemoSection />
         <HowItWorks />
         <Features />
         <FAQ />

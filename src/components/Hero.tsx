@@ -1,15 +1,14 @@
 import { Container } from "@/components/Section"
 import { WaitlistForm } from "@/components/WaitlistForm"
 import { SocialProof } from "@/components/SocialProof"
-import { ProductMockup } from "@/components/ProductMockup"
 
 export function Hero() {
   return (
-    <section id="top" className="relative overflow-hidden pt-28 sm:pt-36">
+    <section id="top" className="relative overflow-hidden pb-16 pt-28 sm:pb-20 sm:pt-36">
       <div className="bg-grid pointer-events-none absolute inset-0 -z-0" aria-hidden="true" />
-      {/* soft accent bloom behind the product */}
+      {/* soft accent bloom */}
       <div
-        className="pointer-events-none absolute left-1/2 top-[52%] -z-0 h-[520px] w-[900px] -translate-x-1/2 rounded-full opacity-60 blur-3xl"
+        className="pointer-events-none absolute left-1/2 top-[70%] -z-0 h-[520px] w-[900px] -translate-x-1/2 rounded-full opacity-60 blur-3xl"
         style={{ background: "radial-gradient(closest-side, #dfe5ff, transparent)" }}
         aria-hidden="true"
       />
@@ -37,14 +36,6 @@ export function Hero() {
         <SocialProof />
       </Container>
 
-      <Container className="relative mt-16 pb-20 sm:mt-20 sm:pb-28">
-        <div className="animate-fade-rise-delay-3">
-          <ProductMockup />
-        </div>
-        <p className="mt-4 text-center font-mono text-[10px] uppercase tracking-[0.14em] text-ink-3">
-          Illustrative preview · figures are examples
-        </p>
-      </Container>
     </section>
   )
 }

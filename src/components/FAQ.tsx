@@ -30,7 +30,7 @@ export function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(0)
 
   return (
-    <section id="faq" className="border-t border-line py-24 sm:py-32">
+    <section id="faq" className="border-t border-line py-20 sm:py-24">
       <Container className="grid gap-12 lg:grid-cols-[1fr_1.6fr] lg:gap-20">
         <Reveal>
           <SectionHeading

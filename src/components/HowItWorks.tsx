@@ -25,7 +25,7 @@ const STEPS = [
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="relative overflow-hidden bg-night py-24 text-white sm:py-32">
+    <section id="how-it-works" className="relative overflow-hidden bg-night py-20 text-white sm:py-24">
       <div className="bg-grid-night pointer-events-none absolute inset-0" aria-hidden="true" />
       <div
         className="pointer-events-none absolute -right-40 top-10 h-[420px] w-[620px] rounded-full opacity-40 blur-3xl"
@@ -33,7 +33,7 @@ export function HowItWorks() {
         aria-hidden="true"
       />
 
-      <Container className="relative grid grid-cols-1 gap-14 lg:grid-cols-[1fr_1.2fr] lg:gap-20">
+      <Container className="relative grid grid-cols-1 gap-10 lg:grid-cols-[1fr_1.2fr] lg:gap-20">
         <Reveal className="lg:sticky lg:top-28 lg:self-start">
           <SectionHeading
             tone="dark"
@@ -59,7 +59,7 @@ export function HowItWorks() {
         <div className="flex flex-col border-b border-night-line">
           {STEPS.map((s, i) => (
             <Reveal key={s.n} delay={i * 120}>
-              <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-5 sm:gap-x-6 border-t border-night-line py-8">
+              <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-5 sm:gap-x-6 border-t border-night-line py-6">
                 <span className="font-mono text-sm text-accent">{s.n}</span>
                 <div>
                   <h3 className="text-2xl tracking-tight text-white">{s.title}</h3>

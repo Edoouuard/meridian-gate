@@ -1,8 +1,7 @@
 import type { ReactNode } from "react"
-import { Check, Fingerprint, Newspaper, Route, ShieldCheck, Wallet, Activity } from "lucide-react"
+import { Check, Fingerprint, Newspaper, Route, Wallet } from "lucide-react"
 import { Container, SectionHeading } from "@/components/Section"
 import { Reveal } from "@/components/Reveal"
-import { HealthGauge } from "@/components/ProductMockup"
 import { cn } from "@/lib/utils"
 
 function FeatureCard({
@@ -40,53 +39,9 @@ function FeatureCard({
 
 /* ---------- Visuals ---------- */
 
-const BARS = [38, 44, 41, 52, 49, 58, 55, 63, 61, 70, 68, 76]
 
-function PortfolioVisual() {
-  const chains = ["Ethereum", "Base", "Arbitrum", "Optimism", "Polygon", "Avalanche"]
-  return (
-    <div className="w-full max-w-md">
-      <div className="flex flex-wrap gap-1.5">
-        {chains.map((c) => (
-          <span key={c} className="rounded-md border border-line bg-surface px-2 py-1 font-mono text-[10px] text-ink-2">
-            {c}
-          </span>
-        ))}
-      </div>
-      <div className="mt-4 rounded-xl border border-line bg-surface p-4">
-        <div className="flex items-end justify-between">
-          <div>
-            <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink-3">All chains · all protocols</div>
-            <div className="mt-1 font-display text-2xl font-medium tracking-tight text-ink">$127,530</div>
-          </div>
-          <span className="font-mono text-xs text-positive">+18.4% 30d</span>
-        </div>
-        <div className="mt-4 flex h-20 items-end gap-1.5">
-          {BARS.map((h, i) => (
-            <span
-              key={i}
-              className="flex-1 rounded-t-[3px] transition-all duration-500 group-hover:opacity-100"
-              style={{
-                height: `${h}%`,
-                background: i === BARS.length - 1 ? "var(--accent)" : "var(--paper-2)",
-              }}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
 
-function RiskVisual() {
-  return (
-    <div className="w-full max-w-[220px] text-center">
-      <HealthGauge value={1.65} />
-      <div className="-mt-1 font-display text-3xl font-medium tracking-tight text-ink">1.65</div>
-      <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink-3">Health factor</div>
-    </div>
-  )
-}
+
 
 function RouteVisual() {
   const rows = [
@@ -168,7 +123,7 @@ function CustodyVisual() {
 
 export function Features() {
   return (
-    <section id="features" className="py-24 sm:py-32">
+    <section id="features" className="py-20 sm:py-24">
       <Container>
         <Reveal>
           <SectionHeading
@@ -182,24 +137,7 @@ export function Features() {
           />
         </Reveal>
 
-        <div className="mt-14 grid gap-4 md:grid-cols-6">
-          <FeatureCard
-            className="md:col-span-4"
-            icon={<Activity size={16} />}
-            title="Portfolio, unified"
-            body="Every position on every chain in one clean view, instead of a dozen open tabs."
-          >
-            <PortfolioVisual />
-          </FeatureCard>
-          <FeatureCard
-            className="md:col-span-2"
-            delay={80}
-            icon={<ShieldCheck size={16} />}
-            title="Risk you can see"
-            body="Health factor, net delta and concentration, visualized before they become a problem."
-          >
-            <RiskVisual />
-          </FeatureCard>
+        <div className="mt-10 grid gap-4 md:grid-cols-6">
           <FeatureCard
             className="md:col-span-2"
             icon={<Route size={16} />}

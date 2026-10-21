@@ -1,12 +1,16 @@
 @import "@fontsource-variable/space-grotesk";
 @import "@fontsource-variable/geist";
 @import "@fontsource-variable/geist-mono";
+@import "@fontsource/cormorant-garamond/500.css";
+@import "@fontsource/cormorant-garamond/600.css";
+@import "@fontsource-variable/lora";
 @import "tailwindcss";
 @import "tw-animate-css";
 
 /* ------------------------------------------------------------------
    Meridian design tokens
    Light, warm "paper" surface · near-black ink · one electric accent.
+   The terminal replica keeps its own gold tokens (--t-*).
    ------------------------------------------------------------------ */
 :root {
   --font-display: 'Space Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
@@ -31,6 +35,19 @@
   --night: #0a1118;
   --night-2: #131c26;
   --night-line: #233040;
+
+  /* Terminal replica: tokens copied from meridian-terminal globals.css */
+  --t-bg: #f3f2f2;
+  --t-surface: #eae9e9;
+  --t-text: #201f1d;
+  --t-accent: #b68235;
+  --t-accent-100: #fff3e4;
+  --t-accent-800: #5a3b0a;
+  --t-muted: #7d7979;
+  --t-line: rgb(32 31 29 / 0.16);
+  --t-good: #3f7a44;
+  --t-warn: #b8791f;
+  --t-bad: #a63f31;
 }
 
 @theme inline {
@@ -54,6 +71,20 @@
   --color-night: var(--night);
   --color-night-2: var(--night-2);
   --color-night-line: var(--night-line);
+
+  --color-t-bg: var(--t-bg);
+  --color-t-surface: var(--t-surface);
+  --color-t-text: var(--t-text);
+  --color-t-accent: var(--t-accent);
+  --color-t-accent-100: var(--t-accent-100);
+  --color-t-accent-800: var(--t-accent-800);
+  --color-t-muted: var(--t-muted);
+  --color-t-line: var(--t-line);
+  --color-t-good: var(--t-good);
+  --color-t-warn: var(--t-warn);
+  --color-t-bad: var(--t-bad);
+  --font-t-head: "Cormorant Garamond", Georgia, serif;
+  --font-t-body: "Lora Variable", Georgia, serif;
 
   /* shadcn aliases so the existing ui/ primitives keep working */
   --color-background: var(--paper);
@@ -197,7 +228,65 @@
   animation: pulse-dot 2.2s ease-in-out infinite;
 }
 
+/* ---------- Hero (Basepoint-style dark, grainy, warm) ---------- */
+.hero-bg {
+  background:
+    radial-gradient(60% 55% at 85% 8%, rgb(176 112 48 / 0.42), transparent 70%),
+    radial-gradient(55% 60% at 8% 20%, rgb(52 78 84 / 0.55), transparent 70%),
+    radial-gradient(80% 60% at 50% 100%, rgb(60 44 26 / 0.35), transparent 70%),
+    var(--night);
+}
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.16;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* 3D wall of live tiles under the hero copy */
+.tile-wall {
+  perspective: 1600px;
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #000 70%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #000 70%, transparent 100%);
+}
+.tile-wall-plane {
+  transform: rotateX(38deg) scale(1.18);
+  transform-origin: 50% 0%;
+}
+@media (max-width: 640px) {
+  .tile-wall-plane {
+    transform: rotateX(38deg) scale(0.7);
+  }
+}
+@keyframes wall-up {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
+}
+@keyframes wall-down {
+  from { transform: translateY(-50%); }
+  to { transform: translateY(0); }
+}
+.wall-up { animation: wall-up var(--dur, 40s) linear infinite; }
+.wall-down { animation: wall-down var(--dur, 40s) linear infinite; }
+
+/* Terminal replica */
+.mt-scroll { overflow-y: auto; scrollbar-width: thin; scrollbar-color: #d7d3d3 transparent; }
+.mt-scroll::-webkit-scrollbar { width: 6px; }
+.mt-scroll::-webkit-scrollbar-thumb { background: #d7d3d3; border-radius: 3px; }
+@keyframes mt-blink { 50% { opacity: 0; } }
+.mt-caret { animation: mt-blink 1s steps(1) infinite; }
+@keyframes mt-flash-up { from { background: rgb(63 122 68 / 0.18); } to { background: transparent; } }
+@keyframes mt-flash-down { from { background: rgb(166 63 49 / 0.16); } to { background: transparent; } }
+.mt-flash-up { animation: mt-flash-up 0.9s ease-out; }
+.mt-flash-down { animation: mt-flash-down 0.9s ease-out; }
+
 @media (prefers-reduced-motion: reduce) {
+  .wall-up,
+  .wall-down,
+  .mt-caret,
   .animate-marquee,
   .pulse-dot {
     animation: none;

@@ -6,9 +6,9 @@ import { cn } from "@/lib/utils"
 const X_URL = "https://x.com/meridian_thesis"
 
 const LINKS = [
+  { label: "Live demo", href: "#demo" },
   { label: "How it works", href: "#how-it-works" },
   { label: "Features", href: "#features" },
-  { label: "Coverage", href: "#coverage" },
   { label: "FAQ", href: "#faq" },
 ]
 
