@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { Plus } from "lucide-react"
+import { Container, SectionHeading } from "@/components/Section"
 import { Reveal } from "@/components/Reveal"
 
 const FAQS = [
@@ -26,56 +27,67 @@ const FAQS = [
 ]
 
 export function FAQ() {
-  const [openIndex, setOpenIndex] = useState<number | null>(null)
+  const [openIndex, setOpenIndex] = useState<number | null>(0)
 
   return (
-    <section className="relative bg-background border-t border-border">
-      <div className="max-w-3xl mx-auto px-8 py-28">
+    <section id="faq" className="border-t border-line py-24 sm:py-32">
+      <Container className="grid gap-12 lg:grid-cols-[1fr_1.6fr] lg:gap-20">
         <Reveal>
-          <h2
-            className="text-3xl sm:text-4xl text-foreground text-center"
-            style={{ fontFamily: "'Instrument Serif', serif" }}
-          >
-            Questions,{" "}
-            <em className="not-italic text-muted-foreground">answered.</em>
-          </h2>
+          <SectionHeading
+            eyebrow="FAQ"
+            title="Questions, answered."
+            sub={
+              <>
+                Something else on your mind? Ask us on{" "}
+                <a
+                  href="https://x.com/meridian_thesis"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-ink underline decoration-line-strong underline-offset-4 hover:decoration-accent"
+                >
+                  X
+                </a>
+                .
+              </>
+            }
+          />
         </Reveal>
 
-        <div className="mt-12 flex flex-col gap-3">
-          {FAQS.map((faq, i) => {
-            const isOpen = openIndex === i
-            return (
-              <Reveal key={faq.q} delay={80 + i * 80}>
-                <div className="liquid-glass rounded-2xl overflow-hidden">
+        <Reveal delay={100}>
+          <div className="border-t border-line">
+            {FAQS.map((faq, i) => {
+              const isOpen = openIndex === i
+              return (
+                <div key={faq.q} className="border-b border-line">
                   <button
                     type="button"
+                    aria-expanded={isOpen}
                     onClick={() => setOpenIndex(isOpen ? null : i)}
-                    className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left cursor-pointer"
+                    className="flex w-full cursor-pointer items-center justify-between gap-6 py-5 text-left"
                   >
-                    <span className="text-foreground text-base sm:text-lg">
-                      {faq.q}
-                    </span>
-                    <Plus
-                      size={20}
-                      className={`shrink-0 text-muted-foreground transition-transform duration-300 ${
-                        isOpen ? "rotate-45" : ""
+                    <span className="font-display text-lg tracking-tight text-ink sm:text-xl">{faq.q}</span>
+                    <span
+                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition-colors duration-300 ${
+                        isOpen ? "border-ink bg-ink text-paper" : "border-line bg-surface text-ink"
                       }`}
-                    />
+                    >
+                      <Plus size={15} className={`transition-transform duration-300 ${isOpen ? "rotate-45" : ""}`} />
+                    </span>
                   </button>
                   <div
-                    className="overflow-hidden transition-all duration-300 ease-out"
-                    style={{ maxHeight: isOpen ? "200px" : "0px" }}
+                    className="grid transition-all duration-300 ease-out"
+                    style={{ gridTemplateRows: isOpen ? "1fr" : "0fr", opacity: isOpen ? 1 : 0 }}
                   >
-                    <p className="px-6 pb-5 text-muted-foreground text-sm leading-relaxed">
-                      {faq.a}
-                    </p>
+                    <div className="overflow-hidden">
+                      <p className="max-w-xl pb-6 text-[15px] leading-relaxed text-ink-2">{faq.a}</p>
+                    </div>
                   </div>
                 </div>
-              </Reveal>
-            )
-          })}
-        </div>
-      </div>
+              )
+            })}
+          </div>
+        </Reveal>
+      </Container>
     </section>
   )
 }

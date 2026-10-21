@@ -1,177 +1,208 @@
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500&display=swap');
+@import "@fontsource-variable/space-grotesk";
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
-
+/* ------------------------------------------------------------------
+   Meridian design tokens
+   Light, warm "paper" surface · near-black ink · one electric accent.
+   ------------------------------------------------------------------ */
 :root {
-  --font-display: 'Instrument Serif', serif;
-  --font-body: 'Inter', sans-serif;
+  --font-display: 'Space Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  --radius: 0.625rem;
+  --radius: 0.75rem;
 
-  --background: 201 100% 13%;
-  --foreground: 0 0% 100%;
-  --card: 0 0% 10%;
-  --card-foreground: 0 0% 100%;
-  --popover: 0 0% 10%;
-  --popover-foreground: 0 0% 100%;
-  --primary: 0 0% 100%;
-  --primary-foreground: 0 0% 4%;
-  --secondary: 0 0% 10%;
-  --secondary-foreground: 0 0% 100%;
-  --muted: 0 0% 10%;
-  --muted-foreground: 240 4% 66%;
-  --accent: 0 0% 10%;
-  --accent-foreground: 0 0% 100%;
-  --destructive: 0 84% 60%;
-  --border: 0 0% 18%;
-  --input: 0 0% 18%;
-  --ring: 0 0% 40%;
+  --paper: #f7f5f1;
+  --paper-2: #efece6;
+  --surface: #ffffff;
+  --ink: #0a1118;
+  --ink-2: #4b535d;
+  --ink-3: #8a9099;
+  --line: #e4e0d9;
+  --line-strong: #d3cec5;
+  --accent: #2f54ff;
+  --accent-ink: #ffffff;
+  --accent-soft: #e6ebff;
+  --positive: #0f9d58;
+  --negative: #e5484d;
+  --night: #0a1118;
+  --night-2: #131c26;
+  --night-line: #233040;
 }
 
 @theme inline {
   --font-display: var(--font-display);
   --font-sans: var(--font-body);
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-card: hsl(var(--card));
-  --color-card-foreground: hsl(var(--card-foreground));
-  --color-popover: hsl(var(--popover));
-  --color-popover-foreground: hsl(var(--popover-foreground));
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
-  --color-secondary: hsl(var(--secondary));
-  --color-secondary-foreground: hsl(var(--secondary-foreground));
-  --color-muted: hsl(var(--muted));
-  --color-muted-foreground: hsl(var(--muted-foreground));
-  --color-accent: hsl(var(--accent));
-  --color-accent-foreground: hsl(var(--accent-foreground));
-  --color-destructive: hsl(var(--destructive));
-  --color-border: hsl(var(--border));
-  --color-input: hsl(var(--input));
-  --color-ring: hsl(var(--ring));
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
+  --font-mono: var(--font-mono);
+
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-positive: var(--positive);
+  --color-negative: var(--negative);
+  --color-night: var(--night);
+  --color-night-2: var(--night-2);
+  --color-night-line: var(--night-line);
+
+  /* shadcn aliases so the existing ui/ primitives keep working */
+  --color-background: var(--paper);
+  --color-foreground: var(--ink);
+  --color-primary: var(--ink);
+  --color-primary-foreground: var(--paper);
+  --color-muted: var(--paper-2);
+  --color-muted-foreground: var(--ink-2);
+  --color-border: var(--line);
+  --color-input: var(--line);
+  --color-ring: var(--accent);
+  --color-destructive: var(--negative);
+
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: calc(var(--radius) * 0.75);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-xl: calc(var(--radius) * 1.5);
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-line outline-accent/50;
   }
   html {
     overflow-x: hidden;
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
   }
   body {
-    @apply bg-background text-foreground;
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
     font-family: var(--font-body);
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.035em;
+    font-weight: 500;
+  }
+  ::selection {
+    background: var(--accent);
+    color: var(--accent-ink);
   }
 }
 
-.liquid-glass {
-  background: rgba(255, 255, 255, 0.01);
-  background-blend-mode: luminosity;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border: none;
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
-  position: relative;
-  overflow: hidden;
+/* ---------- Backgrounds ---------- */
+
+/* Faint engineering grid, fading out toward the edges */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, rgb(10 17 24 / 0.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(10 17 24 / 0.055) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 30%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 30%, transparent 75%);
 }
 
-.liquid-glass::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1.4px;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.45) 0%,
-    rgba(255, 255, 255, 0.15) 20%,
-    rgba(255, 255, 255, 0) 40%,
-    rgba(255, 255, 255, 0) 60%,
-    rgba(255, 255, 255, 0.15) 80%,
-    rgba(255, 255, 255, 0.45) 100%
-  );
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
+.bg-grid-night {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.05) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 25%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 25%, transparent 80%);
 }
 
+/* ---------- Product frame (the big hero screenshot) ---------- */
+.product-frame {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.8) inset,
+    0 1px 2px rgb(10 17 24 / 0.04),
+    0 12px 32px -12px rgb(10 17 24 / 0.12),
+    0 48px 96px -32px rgb(10 17 24 / 0.18);
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+/* ---------- Motion ---------- */
 @keyframes fade-rise {
   from {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(16px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
-
 .animate-fade-rise {
-  animation: fade-rise 0.8s ease-out both;
+  animation: fade-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
-
 .animate-fade-rise-delay {
-  animation: fade-rise 0.8s ease-out 0.2s both;
+  animation: fade-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
 }
-
 .animate-fade-rise-delay-2 {
-  animation: fade-rise 0.8s ease-out 0.4s both;
+  animation: fade-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.24s both;
+}
+.animate-fade-rise-delay-3 {
+  animation: fade-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
 }
 
-.section-aurora {
-  position: relative;
-  isolation: isolate;
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.animate-marquee {
+  animation: marquee 38s linear infinite;
+}
+.marquee-mask {
+  mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
 }
 
-.section-aurora::before {
-  content: '';
-  position: absolute;
-  inset: -25% -10%;
-  z-index: -1;
-  background: linear-gradient(
-    120deg,
-    hsl(201 100% 13%) 0%,
-    hsl(199 85% 18%) 22%,
-    hsl(190 75% 28%) 42%,
-    hsl(201 100% 13%) 58%,
-    hsl(210 70% 20%) 78%,
-    hsl(201 100% 13%) 100%
-  );
-  background-size: 250% 250%;
-  animation: gradient-shift 22s ease-in-out infinite;
-  opacity: 0.65;
-  pointer-events: none;
-}
-
-@keyframes gradient-shift {
-  0% {
-    background-position: 0% 50%;
+@keyframes pulse-dot {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(47 84 255 / 0.45);
   }
   50% {
-    background-position: 100% 50%;
+    box-shadow: 0 0 0 6px rgb(47 84 255 / 0);
   }
-  100% {
-    background-position: 0% 50%;
-  }
+}
+.pulse-dot {
+  animation: pulse-dot 2.2s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .section-aurora::before {
+  .animate-marquee,
+  .pulse-dot {
     animation: none;
-    background-position: 50% 50%;
   }
-}
-
-body {
-  margin: 0;
+  html {
+    scroll-behavior: auto;
+  }
 }

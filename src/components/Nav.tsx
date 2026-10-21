@@ -1,26 +1,72 @@
+import { useEffect, useState } from "react"
+import { ArrowRight } from "lucide-react"
+import { Container, Logo, XLogo } from "@/components/Section"
+import { cn } from "@/lib/utils"
+
 const X_URL = "https://x.com/meridian_thesis"
 
+const LINKS = [
+  { label: "How it works", href: "#how-it-works" },
+  { label: "Features", href: "#features" },
+  { label: "Coverage", href: "#coverage" },
+  { label: "FAQ", href: "#faq" },
+]
+
 export function Nav() {
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8)
+    onScroll()
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [])
+
   return (
-    <nav className="relative z-10 flex flex-row items-center justify-between px-8 py-6 max-w-7xl mx-auto">
-      <span
-        className="text-3xl tracking-tight text-foreground"
-        style={{ fontFamily: "'Instrument Serif', serif" }}
-      >
-        Meridian
-      </span>
-      <a
-        href={X_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Follow Meridian on X"
-        className="liquid-glass rounded-full flex items-center gap-2 px-4 py-2 text-xs sm:text-sm text-foreground hover:scale-[1.03] transition-transform"
-      >
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
-          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-        </svg>
-        <span className="hidden sm:inline">Follow us</span>
-      </a>
-    </nav>
+    <header
+      className={cn(
+        "fixed inset-x-0 top-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-300",
+        scrolled
+          ? "border-b border-line bg-paper/80 backdrop-blur-md"
+          : "border-b border-transparent"
+      )}
+    >
+      <Container className="flex h-16 items-center justify-between">
+        <a href="#top" aria-label="Meridian home" className="text-ink">
+          <Logo />
+        </a>
+
+        <nav className="hidden items-center gap-8 md:flex">
+          {LINKS.map((l) => (
+            <a
+              key={l.href}
+              href={l.href}
+              className="text-sm text-ink-2 transition-colors hover:text-ink"
+            >
+              {l.label}
+            </a>
+          ))}
+        </nav>
+
+        <div className="flex items-center gap-2">
+          <a
+            href={X_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Follow Meridian on X"
+            className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-line bg-surface text-ink transition-colors hover:border-line-strong"
+          >
+            <XLogo size={13} />
+          </a>
+          <a
+            href="#waitlist"
+            className="group flex h-9 items-center gap-1.5 rounded-[10px] bg-ink px-3.5 text-sm font-medium text-paper transition-colors hover:bg-accent"
+          >
+            Join waitlist
+            <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
+          </a>
+        </div>
+      </Container>
+    </header>
   )
 }

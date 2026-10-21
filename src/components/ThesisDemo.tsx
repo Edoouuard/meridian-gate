@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react"
+import { ArrowUp, Check, ShieldCheck } from "lucide-react"
 
 const DEMOS = [
   {
     thesis: "Hedge my portfolio against ETH downside",
     protocol: "Hyperliquid",
+    action: "Short ETH-PERP",
     steps: [
       "Short 2.5 ETH perpetual, sized to your spot exposure",
       "Post 950 USDC margin for a safe 12x liquidation buffer",
@@ -17,6 +19,7 @@ const DEMOS = [
   {
     thesis: "Lock in 8% fixed yield on USDC",
     protocol: "Pendle",
+    action: "Buy PT-USDC",
     steps: [
       "Scanned 14 fixed-rate pools across Pendle and Aave",
       "Buy PT-USDC at a fixed discount, no rate exposure",
@@ -30,6 +33,7 @@ const DEMOS = [
   {
     thesis: "Go long ETH with 2x leverage",
     protocol: "Aave",
+    action: "Loop ETH",
     steps: [
       "Supply 5 ETH as collateral, ~$22,500 at spot",
       "Borrow $22,500 USDC at 50% LTV, well under the 82% liquidation line",
@@ -43,6 +47,7 @@ const DEMOS = [
   {
     thesis: "Find me the best yield on my idle USDC",
     protocol: "Morpho",
+    action: "Deposit to vault",
     steps: [
       "Scanned yield across Aave, Compound, and Morpho vaults",
       "Deposit 5,000 USDC into the vault with the best risk-adjusted rate",
@@ -55,16 +60,19 @@ const DEMOS = [
   },
 ]
 
-const TYPE_SPEED = 45
-const DELETE_SPEED = 25
-const RESULT_DELAY_MS = 450
-const RESULT_HOLD_MS = 3400
+const PROTOCOL_ICON: Record<string, string> = {
+  Hyperliquid: "https://icons.llamao.fi/icons/protocols/hyperliquid",
+  Pendle: "https://icons.llamao.fi/icons/protocols/pendle",
+  Aave: "https://icons.llamao.fi/icons/protocols/aave",
+  Morpho: "https://icons.llamao.fi/icons/protocols/morpho",
+}
 
-const STEP_ANIM = [
-  "animate-fade-rise",
-  "animate-fade-rise-delay",
-  "animate-fade-rise-delay-2",
-]
+const TYPE_SPEED = 42
+const DELETE_SPEED = 18
+const RESULT_DELAY_MS = 450
+const RESULT_HOLD_MS = 3800
+
+const STEP_ANIM = ["animate-fade-rise", "animate-fade-rise-delay", "animate-fade-rise-delay-2"]
 
 type Phase = "typing" | "result" | "holding" | "deleting"
 
@@ -80,10 +88,7 @@ export function ThesisDemo() {
 
     if (phase === "typing") {
       if (text.length < demo.thesis.length) {
-        timeout = setTimeout(
-          () => setText(demo.thesis.slice(0, text.length + 1)),
-          TYPE_SPEED
-        )
+        timeout = setTimeout(() => setText(demo.thesis.slice(0, text.length + 1)), TYPE_SPEED)
       } else {
         timeout = setTimeout(() => setPhase("result"), RESULT_DELAY_MS)
       }
@@ -93,10 +98,7 @@ export function ThesisDemo() {
       timeout = setTimeout(() => setPhase("deleting"), 0)
     } else {
       if (text.length > 0) {
-        timeout = setTimeout(
-          () => setText(text.slice(0, -1)),
-          DELETE_SPEED
-        )
+        timeout = setTimeout(() => setText(text.slice(0, -1)), DELETE_SPEED)
       } else {
         setIndex((i) => (i + 1) % DEMOS.length)
         setPhase("typing")
@@ -109,59 +111,113 @@ export function ThesisDemo() {
   const showResult = phase === "result" || phase === "holding"
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
-      <div className="liquid-glass rounded-3xl sm:rounded-full flex items-center px-5 py-4 sm:px-8 sm:py-6 min-h-[3.75rem] sm:min-h-[4.5rem]">
-        <span className="text-base sm:text-xl text-foreground break-words min-w-0">
+    <div className="flex h-full flex-col">
+      {/* Prompt bar */}
+      <div className="flex items-center gap-3 rounded-xl border border-line bg-paper px-4 py-3 sm:py-3.5">
+        <span className="font-mono text-xs text-accent">›</span>
+        <span className="min-w-0 flex-1 truncate text-left text-sm text-ink sm:text-[15px]">
           {text}
+          <span className="ml-0.5 inline-block h-4 w-[2px] translate-y-[3px] animate-pulse bg-accent" />
+          {!text && <span className="text-ink-3">Describe your thesis…</span>}
         </span>
-        <span className="inline-block w-[2px] h-5 sm:h-6 bg-foreground ml-1 shrink-0 animate-pulse" />
+        <span
+          className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-colors ${
+            text ? "bg-ink text-paper" : "bg-paper-2 text-ink-3"
+          }`}
+        >
+          <ArrowUp size={14} />
+        </span>
       </div>
 
+      {/* Idle state: recent theses, so the pane is never empty while typing */}
+      <div
+        className="grid transition-all duration-500 ease-out"
+        style={{
+          gridTemplateRows: showResult ? "0fr" : "1fr",
+          opacity: showResult ? 0 : 1,
+        }}
+      >
+        <div className="min-h-0 overflow-hidden">
+          <div className="pt-5">
+            <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-ink-3">Try a thesis</div>
+            <div className="mt-2.5 flex flex-col gap-2">
+              {DEMOS.map((d, i) => (
+                <div
+                  key={d.thesis}
+                  className={`flex items-center justify-between gap-3 rounded-lg border px-3 py-2.5 text-[13px] transition-colors duration-300 ${
+                    i === index ? "border-accent/40 bg-accent-soft text-ink" : "border-line bg-surface text-ink-2"
+                  }`}
+                >
+                  <span className="truncate">{d.thesis}</span>
+                  <span className="shrink-0 font-mono text-[10px] text-ink-3">{d.protocol}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Proposal */}
       <div
         className="grid transition-all duration-500 ease-out"
         style={{
           gridTemplateRows: showResult ? "1fr" : "0fr",
           opacity: showResult ? 1 : 0,
-          marginTop: showResult ? "1rem" : "0rem",
+          marginTop: showResult ? "0.875rem" : "0rem",
         }}
       >
-        <div className="overflow-hidden min-h-0">
-          <div
-            key={index}
-            className="liquid-glass rounded-2xl p-5 sm:p-6 text-left"
-          >
-            <span className="text-xs tracking-[0.15em] uppercase text-muted-foreground">
-              {demo.protocol}
-            </span>
+        <div className="min-h-0 overflow-hidden">
+          <div key={index} className="rounded-xl border border-line bg-surface text-left">
+            <div className="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
+              <div className="flex items-center gap-2.5">
+                <img
+                  src={PROTOCOL_ICON[demo.protocol]}
+                  alt=""
+                  className="h-6 w-6 rounded-full bg-paper-2"
+                />
+                <div>
+                  <div className="text-sm font-medium text-ink">{demo.action}</div>
+                  <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink-3">
+                    via {demo.protocol}
+                  </div>
+                </div>
+              </div>
+              <span className="rounded-md bg-accent-soft px-2 py-1 font-mono text-[10px] uppercase tracking-[0.1em] text-accent">
+                Proposed
+              </span>
+            </div>
 
-            <ol className="mt-3 flex flex-col gap-2">
+            <ol className="flex flex-col gap-2 px-4 py-3.5">
               {demo.steps.map((step, i) => (
                 <li
                   key={step}
-                  className={`flex items-start gap-3 text-foreground text-sm sm:text-base ${STEP_ANIM[i]}`}
+                  className={`flex items-start gap-2.5 text-[13px] leading-snug text-ink-2 ${STEP_ANIM[i]}`}
                 >
-                  <span className="text-muted-foreground shrink-0">
-                    {i + 1}.
+                  <span className="mt-[1px] flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-positive/10 text-positive">
+                    <Check size={10} strokeWidth={3} />
                   </span>
                   <span>{step}</span>
                 </li>
               ))}
             </ol>
 
-            <div className="flex flex-wrap gap-x-8 gap-y-3 mt-4 pt-4 border-t border-border">
-              {demo.stats.map((stat) => (
-                <div key={stat.label}>
-                  <div className="text-xs text-muted-foreground">
-                    {stat.label}
+            <div className="flex flex-wrap items-end justify-between gap-4 border-t border-line px-4 py-3">
+              <div className="flex gap-6">
+                {demo.stats.map((stat) => (
+                  <div key={stat.label}>
+                    <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-ink-3">
+                      {stat.label}
+                    </div>
+                    <div className="font-display text-lg font-medium tracking-tight text-ink">
+                      {stat.value}
+                    </div>
                   </div>
-                  <div
-                    className="text-foreground text-lg sm:text-xl mt-0.5"
-                    style={{ fontFamily: "'Instrument Serif', serif" }}
-                  >
-                    {stat.value}
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
+              <span className="flex items-center gap-1.5 rounded-lg bg-ink px-3 py-2 text-xs font-medium text-paper">
+                <ShieldCheck size={13} />
+                Review &amp; sign
+              </span>
             </div>
           </div>
         </div>

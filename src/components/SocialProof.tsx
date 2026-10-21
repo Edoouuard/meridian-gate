@@ -19,9 +19,12 @@ export function SocialProof() {
   if (count === null || count === 0) return null
 
   return (
-    <p className="mt-4 text-xs sm:text-sm text-muted-foreground">
-      {count.toLocaleString()} {count === 1 ? "person has" : "people have"}{" "}
-      already joined
+    <p className="mt-4 flex items-center gap-2 text-xs text-ink-2 sm:text-sm">
+      <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-accent" />
+      <span>
+        <span className="font-medium text-ink">{count.toLocaleString()}</span>{" "}
+        {count === 1 ? "person has" : "people have"} already joined
+      </span>
     </p>
   )
 }

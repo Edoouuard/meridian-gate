@@ -1,20 +1,26 @@
 import { Analytics } from "@vercel/analytics/react"
+import { Nav } from "@/components/Nav"
 import { Hero } from "@/components/Hero"
-import { HowItWorks } from "@/components/HowItWorks"
 import { ProtocolLogos } from "@/components/ProtocolLogos"
+import { HowItWorks } from "@/components/HowItWorks"
 import { Features } from "@/components/Features"
-import { ClosingCta } from "@/components/ClosingCta"
 import { FAQ } from "@/components/FAQ"
+import { ClosingCta } from "@/components/ClosingCta"
+import { Footer } from "@/components/Footer"
 
 function App() {
   return (
     <>
-      <Hero />
-      <HowItWorks />
-      <ProtocolLogos />
-      <Features />
-      <ClosingCta />
-      <FAQ />
+      <Nav />
+      <main>
+        <Hero />
+        <ProtocolLogos />
+        <HowItWorks />
+        <Features />
+        <FAQ />
+        <ClosingCta />
+      </main>
+      <Footer />
       <Analytics />
     </>
   )

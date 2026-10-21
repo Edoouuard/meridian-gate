@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from "react"
-import { Copy, Check, Share2 } from "lucide-react"
+import { Copy, Check, Share2, ArrowRight } from "lucide-react"
 
 const STORAGE_KEY = "meridian_referral_code"
 const X_URL = "https://x.com/meridian_thesis"
@@ -59,10 +59,10 @@ function Task({
   children: ReactNode
 }) {
   return (
-    <div className="flex gap-3 text-left py-4 border-t border-white/10 first:border-t-0">
+    <div className="flex gap-3 text-left py-4 border-t border-line first:border-t-0">
       <span
         className={`shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-[11px] transition-colors ${
-          done ? "bg-primary text-primary-foreground" : "border border-white/25 text-muted-foreground"
+          done ? "bg-primary text-primary-foreground" : "border border-line-strong text-ink-3"
         }`}
       >
         {done ? <Check size={13} strokeWidth={3} /> : n}
@@ -74,7 +74,7 @@ function Task({
           </p>
           <span
             className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium tabular-nums ${
-              done ? "bg-white/10 text-muted-foreground" : "bg-primary text-primary-foreground"
+              done ? "bg-paper-2 text-ink-3" : "bg-accent-soft text-accent"
             }`}
           >
             {points}
@@ -151,22 +151,22 @@ function ReferralStatus({ status }: { status: Status }) {
     (Object.keys(TASK_POINTS) as TaskId[]).reduce((sum, t) => sum + (done[t] ? TASK_POINTS[t] : 0), 0) +
     status.referralCount * REFERRAL_POINTS
   const buttonClass =
-    "rounded-full flex items-center justify-center gap-2 px-4 py-2.5 w-full cursor-pointer hover:scale-[1.02] transition-transform text-xs sm:text-sm"
+    "rounded-[10px] flex items-center justify-center gap-2 px-4 py-2.5 w-full cursor-pointer transition-colors text-xs sm:text-sm"
 
   return (
-    <div className="liquid-glass rounded-3xl px-6 py-6 sm:px-8 sm:py-7 mt-12 w-full max-w-sm sm:max-w-md text-center animate-fade-rise-delay-2">
+    <div className="card relative px-6 py-6 sm:px-8 sm:py-7 mt-10 w-full max-w-sm sm:max-w-md text-center animate-fade-rise-delay-2 shadow-[0_16px_40px_-24px_rgb(10_17_24/0.25)]">
       {status.confirmed ? (
         <p className="text-muted-foreground text-xs sm:text-sm mb-3">
           ✓ Email confirmed
         </p>
       ) : (
-        <p className="text-foreground text-xs sm:text-sm mb-4 rounded-2xl border border-border/60 px-4 py-3">
+        <p className="text-foreground text-xs sm:text-sm mb-4 rounded-xl border border-line bg-paper px-4 py-3">
           Check your inbox and click the link to confirm your email.
         </p>
       )}
       <p className="text-foreground text-base sm:text-lg">
         You're{" "}
-        <span style={{ fontFamily: "'Instrument Serif', serif" }}>
+        <span className="font-display font-medium">
           #{status.position}
         </span>{" "}
         on the list.
@@ -183,9 +183,9 @@ function ReferralStatus({ status }: { status: Status }) {
           {points} pts
         </span>
       </div>
-      <div className="h-1 rounded-full bg-white/10 overflow-hidden mb-2">
+      <div className="h-1 rounded-full bg-paper-2 overflow-hidden mb-2">
         <div
-          className="h-full bg-primary transition-all duration-500"
+          className="h-full bg-accent transition-all duration-500"
           style={{ width: `${(completed / 5) * 100}%` }}
         />
       </div>
@@ -196,7 +196,7 @@ function ReferralStatus({ status }: { status: Status }) {
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => markDone("follow")}
-          className={`${buttonClass} bg-primary text-primary-foreground`}
+          className={`${buttonClass} bg-ink text-paper hover:bg-accent`}
         >
           <XLogo />
           <span>Follow @meridian_thesis</span>
@@ -209,7 +209,7 @@ function ReferralStatus({ status }: { status: Status }) {
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => markDone("engage")}
-          className={`${buttonClass} liquid-glass text-foreground`}
+          className={`${buttonClass} border border-line bg-paper text-ink hover:border-line-strong`}
         >
           <XLogo />
           <span>Open the announcement</span>
@@ -222,7 +222,7 @@ function ReferralStatus({ status }: { status: Status }) {
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => markDone("engage2")}
-          className={`${buttonClass} liquid-glass text-foreground`}
+          className={`${buttonClass} border border-line bg-paper text-ink hover:border-line-strong`}
         >
           <XLogo />
           <span>Watch the launch video</span>
@@ -235,7 +235,7 @@ function ReferralStatus({ status }: { status: Status }) {
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => markDone("share")}
-          className={`${buttonClass} liquid-glass text-foreground`}
+          className={`${buttonClass} border border-line bg-paper text-ink hover:border-line-strong`}
         >
           <Share2 size={15} className="text-muted-foreground shrink-0" />
           <span>Post on X</span>
@@ -246,7 +246,7 @@ function ReferralStatus({ status }: { status: Status }) {
         <button
           type="button"
           onClick={handleCopy}
-          className="liquid-glass rounded-full flex items-center justify-between gap-3 px-4 py-2.5 w-full cursor-pointer hover:scale-[1.02] transition-transform"
+          className="rounded-[10px] border border-line bg-paper flex items-center justify-between gap-3 px-4 py-2.5 w-full cursor-pointer transition-colors hover:border-line-strong"
         >
           <span className="text-foreground text-xs sm:text-sm truncate">{link}</span>
           {copied ? (
@@ -255,12 +255,12 @@ function ReferralStatus({ status }: { status: Status }) {
             <Copy size={16} className="text-muted-foreground shrink-0" />
           )}
         </button>
-        <div className="flex items-center justify-between gap-2 mt-3 rounded-2xl border border-white/10 px-3 py-2">
+        <div className="flex items-center justify-between gap-2 mt-3 rounded-[10px] border border-line px-3 py-2">
           <span className="text-[11px] sm:text-xs text-muted-foreground text-left">
             Each friend who joins through your link
             {status.referralCount > 0 ? ` (${status.referralCount} so far)` : ""}
           </span>
-          <span className="shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium bg-primary text-primary-foreground">
+          <span className="shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium bg-accent-soft text-accent">
             +{REFERRAL_POINTS} pts each
           </span>
         </div>
@@ -357,14 +357,14 @@ export function WaitlistForm({ id }: { id?: string }) {
   }
 
   return (
-    <div className="flex flex-col items-center w-full max-w-sm sm:max-w-md mt-12 animate-fade-rise-delay-2">
+    <div className="flex flex-col items-center w-full max-w-sm sm:max-w-md mt-10 animate-fade-rise-delay-2">
       {confirmState === "1" && (
         <span className="mb-3 text-xs text-foreground">
           ✓ Email confirmed. You're on the list.
         </span>
       )}
       {invited && id && !confirmState && (
-        <span className="mb-3 rounded-full liquid-glass px-4 py-1.5 text-xs text-foreground">
+        <span className="mb-3 rounded-full border border-line bg-surface px-4 py-1.5 text-xs text-ink">
           You've been invited by a friend. Join the waitlist below.
         </span>
       )}
@@ -376,7 +376,7 @@ export function WaitlistForm({ id }: { id?: string }) {
       <form
         id={id}
         onSubmit={handleSubmit}
-        className="liquid-glass rounded-full flex items-center gap-2 pl-5 pr-1.5 py-1.5 sm:pl-6 sm:pr-2 sm:py-2 w-full"
+        className="flex items-center gap-2 w-full rounded-xl border border-line bg-surface pl-4 pr-1.5 py-1.5 shadow-[0_1px_2px_rgb(10_17_24/0.05)] transition-[border-color,box-shadow] focus-within:border-accent focus-within:shadow-[0_0_0_4px_rgb(47_84_255/0.12)]"
       >
         <input
           type="text"
@@ -395,20 +395,21 @@ export function WaitlistForm({ id }: { id?: string }) {
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Enter your email"
           disabled={submitting}
-          className="bg-transparent outline-none text-base text-foreground placeholder:text-muted-foreground flex-1 min-w-0 disabled:opacity-60"
+          className="bg-transparent outline-none text-[15px] text-ink placeholder:text-ink-3 flex-1 min-w-0 py-1.5 disabled:opacity-60"
         />
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-full bg-primary text-primary-foreground px-4 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm whitespace-nowrap shrink-0 hover:scale-[1.03] transition-transform cursor-pointer disabled:opacity-60 disabled:cursor-default disabled:hover:scale-100"
+          className="group flex items-center gap-1.5 rounded-[10px] bg-accent text-accent-ink px-4 sm:px-5 py-2.5 text-sm font-medium whitespace-nowrap shrink-0 transition-colors hover:bg-ink cursor-pointer disabled:opacity-60 disabled:cursor-default"
         >
-          {submitting ? "Joining…" : "Join Waitlist"}
+          {submitting ? "Joining…" : "Join waitlist"}
+          {!submitting && <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />}
         </button>
       </form>
       {error && (
         <span className="mt-3 text-xs text-destructive">{error}</span>
       )}
-      <p className="mt-3 text-[11px] text-muted-foreground/80">
+      <p className="mt-3 text-[11px] text-ink-3">
         By joining, you agree to receive emails from Meridian. Unsubscribe anytime.
       </p>
     </div>
