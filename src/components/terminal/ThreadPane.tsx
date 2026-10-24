@@ -25,7 +25,7 @@ const LEVEL_TONE: Record<Level, "good" | "warn" | "bad"> = {
 function Empty({ onRun }: { onRun: (id: string) => void }) {
   return (
     <div className="flex min-h-full flex-col items-center justify-center px-4 py-10 text-center">
-      <h3 className="font-t-head text-[28px] font-semibold leading-tight tracking-[-0.015em] sm:text-[32px]">
+      <h3 className="font-t-head text-[28px] leading-tight tracking-[-0.015em] sm:text-[32px]">
         What do you want to do?
       </h3>
       <p className="mt-2 max-w-md text-[13px] leading-relaxed text-t-muted">
@@ -40,7 +40,7 @@ function Empty({ onRun }: { onRun: (id: string) => void }) {
             onClick={() => onRun(s.id)}
             className="group flex cursor-pointer flex-col rounded-[4px] border border-t-line p-3 text-left transition-colors hover:border-t-accent hover:bg-t-accent-100/60"
           >
-            <span className="font-t-head text-[17px] font-semibold leading-tight">{s.title}</span>
+            <span className="font-t-head text-[17px] leading-tight">{s.title}</span>
             <span className="mt-1 flex-1 text-[11px] leading-snug text-t-muted">{s.sub}</span>
             <ArrowRight size={13} className="mt-3 text-t-accent transition-transform group-hover:translate-x-0.5" />
           </button>
@@ -129,7 +129,7 @@ export function ThreadPane({
             {ready && opt && (
               <div className="animate-fade-rise">
                 <Kicker>Proposal</Kicker>
-                <p className="mt-1 font-t-head text-[20px] font-semibold leading-snug">{s.answer}</p>
+                <p className="mt-1 font-t-head text-[20px] leading-snug">{s.answer}</p>
 
                 <div className={cn("mt-3 grid gap-2.5", s.options.length > 1 && "md:grid-cols-3")}>
                   {s.options.map((o, i) => {
@@ -153,13 +153,13 @@ export function ThreadPane({
                           {s.options.length > 1 ? <Tag tone={LEVEL_TONE[o.level]}>{o.level}</Tag> : <Tag tone="good">{o.risk}</Tag>}
                           {active && <Check size={13} className="text-t-accent" strokeWidth={3} />}
                         </div>
-                        <div className="mt-2 font-t-head text-[17px] font-semibold leading-tight">{o.title}</div>
+                        <div className="mt-2 font-t-head text-[17px] leading-tight">{o.title}</div>
                         <div className="mt-1 flex items-center gap-1.5 text-[11px] text-t-muted">
                           <TIcon src={o.protocolIcon} name={o.protocol} size={14} />
                           {o.protocol} · {o.chain}
                         </div>
                         <div className="mt-2.5 text-[10px] uppercase tracking-[0.06em] text-t-muted">{o.metric.label}</div>
-                        <div className="font-t-head text-[22px] font-semibold leading-none">{o.metric.value}</div>
+                        <div className="font-t-head text-[22px] leading-none">{o.metric.value}</div>
                         <ul className="mt-2 flex flex-col gap-0.5 text-[11px] leading-snug">
                           {o.lines.map((l) => (
                             <li key={l}>· {l}</li>
@@ -236,7 +236,7 @@ export function ThreadPane({
                     </ol>
                     {thread.exec === "done" && (
                       <div className="mt-3 border-t border-t-line pt-3 animate-fade-rise">
-                        <p className="font-t-head text-[18px] font-semibold leading-snug text-t-good">
+                        <p className="font-t-head text-[18px] leading-snug text-t-good">
                           Done. {opt.title} is live.
                         </p>
                         <p className="mt-0.5 text-[11px] text-t-muted">

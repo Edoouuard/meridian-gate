@@ -48,7 +48,7 @@ export function Btn({
   const v = {
     primary: "border-t-accent text-t-accent hover:bg-t-accent/10 active:bg-t-accent/20",
     secondary: "border-t-line text-t-text hover:bg-t-text/[0.07]",
-    solid: "border-t-accent bg-t-accent text-t-bg hover:bg-[#a06f24]",
+    solid: "border-t-accent bg-t-accent text-t-bg hover:bg-white",
   }
   return (
     <button
@@ -104,7 +104,7 @@ export function TIcon({ src, name, size = 18 }: { src: string; name: string; siz
   if (failed) {
     return (
       <span
-        className="inline-flex shrink-0 items-center justify-center rounded-full bg-t-surface font-t-head text-[10px] font-semibold text-t-muted"
+        className="inline-flex shrink-0 items-center justify-center rounded-full bg-t-surface font-t-head text-[10px] text-t-muted"
         style={{ width: size, height: size }}
       >
         {name[0]}

@@ -112,7 +112,7 @@ export function LeftPanel({
           <Kicker>Portfolio</Kicker>
           <Tag>Demo wallet</Tag>
         </div>
-        <div className={`mt-1.5 w-fit rounded-[3px] font-t-head text-[30px] font-semibold leading-none ${flash}`}>
+        <div className={`mt-1.5 w-fit rounded-[3px] font-t-head text-[30px] leading-none ${flash}`}>
           {fmtUsd(net)}
         </div>
         <div className="mt-1 text-[11px] text-t-good">+$2,184 · 1.74% today</div>
@@ -148,7 +148,7 @@ export function LeftPanel({
             <div className="flex items-baseline justify-between text-[12px]">
               <span>Lowest health factor · Aave</span>
               <span
-                className={`rounded-[3px] px-1 font-t-head text-lg font-semibold ${hf < 1.5 ? "text-t-warn" : "text-t-good"} ${hfFlash}`}
+                className={`rounded-[3px] px-1 font-t-head text-lg ${hf < 1.5 ? "text-t-warn" : "text-t-good"} ${hfFlash}`}
               >
                 {hf.toFixed(2)}
               </span>
@@ -159,7 +159,7 @@ export function LeftPanel({
           <div>
             <div className="flex items-baseline justify-between text-[12px]">
               <span>Net ETH delta</span>
-              <span className="font-t-head text-lg font-semibold text-t-accent">
+              <span className="font-t-head text-lg text-t-accent">
                 {delta >= 0 ? "+" : "−"}
                 {Math.abs(delta).toFixed(2)} ETH
               </span>
@@ -207,7 +207,7 @@ export function LeftPanel({
                   <div className="truncate text-[12px]">{s.name}</div>
                   <div className="truncate text-[10px] text-t-muted">{s.venue}</div>
                 </div>
-                <span className="shrink-0 font-t-head text-base font-semibold">{s.metric}</span>
+                <span className="shrink-0 font-t-head text-base">{s.metric}</span>
               </div>
             ))}
           </div>
