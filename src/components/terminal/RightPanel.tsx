@@ -76,7 +76,7 @@ function Yields({ onRun }: { onRun: (id: string, prompt?: string) => void }) {
                 {!p.executable && " · view only"}
               </div>
             </div>
-            <span className="font-t-head text-base font-semibold tabular-nums transition-colors group-enabled:group-hover:text-t-accent">
+            <span className="font-t-head text-base tabular-nums transition-colors group-enabled:group-hover:text-t-accent">
               {p.apy.toFixed(1)}%
             </span>
           </button>
@@ -142,7 +142,7 @@ export function RightPanel({ onRun }: { onRun: (id: string, prompt?: string) => 
           {ALPHA.map((a) => (
             <Card key={a.title}>
               <Kicker>Signal</Kicker>
-              <div className="mt-1 font-t-head text-lg font-semibold leading-tight">{a.title}</div>
+              <div className="mt-1 font-t-head text-lg leading-tight">{a.title}</div>
               <p className="mt-1 text-[12px] leading-snug text-t-muted">{a.body}</p>
               <Btn className="mt-2.5" onClick={() => onRun(a.scenario)}>
                 Ask Meridian <ArrowRight size={12} />

@@ -24,7 +24,7 @@ const DELTA_AFTER = [0.31, -0.03, -0.4]
 
 /**
  * A working replica of the Meridian terminal, faithful to the real UI
- * (Cormorant Garamond + Lora, gold accent, three columns) but driven by demo data:
+ * (Instrument Serif + Inter on navy, three columns) but driven by demo data:
  * prompts are matched to scripted scenarios and execution is simulated.
  */
 export function LiveTerminal() {
@@ -185,7 +185,7 @@ export function LiveTerminal() {
       {/* header */}
       <div className="flex items-center justify-between gap-3 border-b border-t-line px-3 py-2.5 sm:px-4">
         <div className="flex min-w-0 items-center gap-3">
-          <span className="font-t-head text-[24px] font-semibold leading-none tracking-[-0.015em]">Meridian</span>
+          <span className="font-t-head text-[24px] leading-none tracking-[-0.015em]">Meridian</span>
           <span className="hidden items-center gap-1.5 truncate rounded-full border border-t-line px-2.5 py-1 text-[11px] sm:inline-flex">
             <span className="h-1.5 w-1.5 rounded-full bg-t-good" />
             Demo wallet · 8 chains
